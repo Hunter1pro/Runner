@@ -9,11 +9,11 @@ namespace Game.Level.Systems
     /// </summary>
     public class SpawnSystem : ISpawnSystem
     {
-        private LevelObjectsContainer _levelObjectsContainer;
+        private ILevelObjectsContainer _levelObjectsContainer;
 
         private GameObject _root;
 
-        public SpawnSystem(LevelObjectsContainer levelObjectsContainer)
+        public SpawnSystem(ILevelObjectsContainer levelObjectsContainer)
         {
             _levelObjectsContainer = levelObjectsContainer;
         }
@@ -28,7 +28,7 @@ namespace Game.Level.Systems
         
         public GameObject SpawnEmpty(string name)
         {
-            var instance = GameObject.Instantiate<GameObject>(null);
+            var instance = new GameObject(name);
             instance.name = name;
             _levelObjectsContainer.AddLevelObject(instance);
             
@@ -41,6 +41,6 @@ namespace Game.Level.Systems
         [Obsolete("Can be AssetView base class")]
         T Spawn<T>(T asset, Transform root = null) where T : Object;
 
-        public GameObject SpawnEmpty(string name);
+        GameObject SpawnEmpty(string name);
     }
 }

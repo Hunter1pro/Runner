@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Utils;
@@ -12,23 +13,21 @@ namespace Game.Level.Systems
         private GameObject _gameObject;
         private Mesh _mesh;
 
-        private List<Vector3> _vertices = new List<Vector3>();
-        private List<int> _triangles = new List<int>();
+        private List<Vector3> _vertices = new();
+        private List<int> _triangles = new();
+        [Obsolete("Laout dublicate with HexGridSystem")]
         private Layout _layout;
         
         public int Size { get; }
         
-        public Dictionary<string, Hex> Map { get; private set; } = new Dictionary<string, Hex>();
-
-        private ISpawnSystem _spawnSystem;
+        public Dictionary<string, Hex> Map { get; private set; } = new();
+        
         private ICustomLogger _logger;
 
-        public MapCreator(MapCreatorView mapCreatorView, ISpawnSystem spawnSystem, ICustomLogger logger)
+        public MapCreator(MapCreatorView mapCreatorView, ICustomLogger logger)
         {
             Size = mapCreatorView.Size;
             _logger = logger;
-
-            _spawnSystem = spawnSystem;
             
             _layout = new Layout(Layout.Flat, Size, new float3(Size, 0, Size * Mathf.Sqrt(3) / 2));
         }
@@ -45,9 +44,9 @@ namespace Game.Level.Systems
             _mesh.Clear();
         }
 
-        public void SpawnMap(int left, int right, int top, int bottom, Material material)
+        public GameObject SpawnMap(GameObject gameObject, int left, int right, int top, int bottom, Material material)
         {
-            _gameObject = _spawnSystem.SpawnEmpty("HexMap");
+            _gameObject = gameObject;
 
             // Need Layout offset update for change root position
             _gameObject.transform.position = Vector3.zero;
@@ -64,6 +63,7 @@ namespace Game.Level.Systems
                 for (int q = left - r_offset; q <= right - r_offset; q++)
                 {
                     var hex = new Hex(q, r, -q - r);
+                    _logger.Log($"Spawn {hex.Q} r {hex.R} s {hex.S}");
                     if (Map.Values.ToList().Exists(x => x == hex))
                         _logger.LogError($"Value is exist q {hex.Q} r {hex.R} s {hex.S}");
                     Map.Add(hex.CoordinateId, hex);
@@ -76,6 +76,8 @@ namespace Game.Level.Systems
             _mesh.RecalculateNormals();
 
             _gameObject.AddComponent<MeshCollider>().sharedMesh = _mesh;
+
+            return _gameObject;
         }
 
         private void AddHex(Hex h, float y = 0)
@@ -113,7 +115,7 @@ namespace Game.Level.Systems
 
     public interface IMapCreator
     {
-        void SpawnMap(int left, int right, int top, int bottom, Material material);
+        GameObject SpawnMap(GameObject gameObject, int left, int right, int top, int bottom, Material material);
         void Clear();
     }
 }
