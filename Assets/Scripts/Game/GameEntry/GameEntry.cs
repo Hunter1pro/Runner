@@ -3,14 +3,13 @@ using GameObjectService;
 
 namespace Game
 {
-    public class SpawnSystem : BaseSystem
+    public class GameEntry : BaseSystem
     {
-        protected override int initOrder { get; }
-    
+        protected override int _initOrder { get; }
         public override Task Init()
         {
-        
             return Task.CompletedTask;
         }
     }
 }
+

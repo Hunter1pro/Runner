@@ -1,24 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using GameObjectService;
 using HexLib;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Game
+namespace Game.Level.Systems
 {
-    public class MapCreator : BaseSystem, IMapCreator
+    public class MapCreator : IMapCreator
     {
-        protected override int initOrder => -2;
-        
-        [field: SerializeField]
         public int Size {get; private set; } = 1;
 
-        [SerializeField] private int _weight = 3;
-        [SerializeField] private int _height = 100;
+        private int _weight = 3;
+        private int _height = 100;
         
-        [SerializeField]
         private Material _material;
 
         private GameObject _gameObject;
@@ -30,11 +24,19 @@ namespace Game
         
         public Dictionary<string, Hex> Map { get; private set; } = new Dictionary<string, Hex>();
 
-        public override Task Init()
+        public MapCreator(MapCreatorView mapCreatorView)
         {
+            Size = mapCreatorView.Size;
+            _weight = mapCreatorView.Weight;
+            _height = mapCreatorView.Height;
+            _material = mapCreatorView.Material;
+            
             _layout = new Layout(Layout.Flat, Size, new float3(Size, 0, Size * Mathf.Sqrt(3) / 2));
+        }
+
+        public void SpawnMap()
+        {
             SpawnMap(0,_weight, 0, _height);
-            return Task.CompletedTask;
         }
 
         public void Clear()

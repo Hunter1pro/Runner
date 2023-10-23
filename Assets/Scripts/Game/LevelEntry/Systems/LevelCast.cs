@@ -1,26 +1,22 @@
-using System.Threading.Tasks;
-using GameObjectService;
+using Game.Views;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Game
+namespace Game.Level.Systems
 {
-    public class LevelCast : BaseSystem
+    public class LevelCast
     {
-        [SerializeField]
         private Camera _camera;
 
-        [SerializeField]
         private LayerMask _layerMask;
 
-        [SerializeField]
         private float _distance = 500;
 
-        protected override int initOrder => 0;
-
-        public override Task Init()
+        public LevelCast(LevelCastView levelCastView)
         {
-            return Task.CompletedTask;
+            _camera = levelCastView.Camera;
+            _layerMask = levelCastView.LayerMask;
+            _distance = levelCastView.Distance;
         }
 
         public (bool exist, RaycastHit hit) Touch(Ray ray)
@@ -33,11 +29,11 @@ namespace Game
         public (bool exist, RaycastHit hit) Touch()
         {
             RaycastHit hitInfo = default;
-            bool result = Physics.Raycast(Camera.main.ScreenPointToRay(MouseScreenPosition()), out hitInfo, _distance, _layerMask);
+            bool result = Physics.Raycast(_camera.ScreenPointToRay(MouseScreenPosition()), out hitInfo, _distance, _layerMask);
             return (result, hitInfo);
         }
         public Vector3 MouseScreenPosition()
-            => new Vector3(Mouse.current.position.value.x, Mouse.current.position.value.y, Camera.main.nearClipPlane);
+            => new Vector3(Mouse.current.position.value.x, Mouse.current.position.value.y, _camera.nearClipPlane);
     }
 }
 
