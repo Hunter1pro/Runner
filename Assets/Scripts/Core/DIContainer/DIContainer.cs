@@ -5,13 +5,13 @@ using System.Text;
 
 namespace DIContainer
 {
-    public class DIContainer : IGraph<ServiceDescriptor>, IDisposable
+    public class Container : IGraph<ServiceDescriptor>, IDisposable
     {
         private List<ServiceDescriptor> _serviceDescriptors;
         private List<object> _transientImplementations = new List<object>();
         private List<object> _singletonImplementations = new List<object>();
 
-        public DIContainer(List<ServiceDescriptor> serviceDescriptors)
+        public Container(List<ServiceDescriptor> serviceDescriptors)
         {
             _serviceDescriptors = serviceDescriptors;
         }

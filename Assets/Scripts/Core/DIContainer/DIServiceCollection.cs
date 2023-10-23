@@ -7,7 +7,7 @@ namespace DIContainer
     {
         private List<ServiceDescriptor> _serviceDescriptors = new List<ServiceDescriptor>();
 
-        private List<DIContainer> _diContainers = new List<DIContainer>();
+        private List<Container> _diContainers = new List<Container>();
 
         public void RegisterSingleton<TService>()
         {
@@ -44,9 +44,9 @@ namespace DIContainer
             _serviceDescriptors.Add(new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Transient));
         }
 
-        public DIContainer GenerateContainer()
+        public Container GenerateContainer()
         {
-            var diContainer = new DIContainer(_serviceDescriptors);
+            var diContainer = new Container(_serviceDescriptors);
             _diContainers.Add(diContainer);
             return diContainer;
         }

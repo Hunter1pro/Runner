@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace Game.Level.Systems
 {
-    public class LevelCast
+    public class LevelCast : ILevelCast
     {
         private Camera _camera;
 
@@ -34,6 +34,13 @@ namespace Game.Level.Systems
         }
         public Vector3 MouseScreenPosition()
             => new Vector3(Mouse.current.position.value.x, Mouse.current.position.value.y, _camera.nearClipPlane);
+    }
+
+    public interface ILevelCast
+    {
+        (bool exist, RaycastHit hit) Touch(Ray ray);
+        (bool exist, RaycastHit hit) Touch();
+        Vector3 MouseScreenPosition();
     }
 }
 

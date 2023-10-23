@@ -8,10 +8,8 @@ namespace Game.Level.Systems
 {
     public class MapCreator : IMapCreator
     {
-        public int Size {get; private set; } = 1;
-
-        private int _weight = 3;
-        private int _height = 100;
+        private int _weight;
+        private int _height;
         
         private Material _material;
 
@@ -22,14 +20,20 @@ namespace Game.Level.Systems
         private List<int> _triangles = new List<int>();
         private Layout _layout;
         
+        public int Size { get; }
+        
         public Dictionary<string, Hex> Map { get; private set; } = new Dictionary<string, Hex>();
 
-        public MapCreator(MapCreatorView mapCreatorView)
+        private ISpawnSystem _spawnSystem;
+
+        public MapCreator(MapCreatorView mapCreatorView, ISpawnSystem spawnSystem)
         {
             Size = mapCreatorView.Size;
             _weight = mapCreatorView.Weight;
             _height = mapCreatorView.Height;
             _material = mapCreatorView.Material;
+
+            _spawnSystem = spawnSystem;
             
             _layout = new Layout(Layout.Flat, Size, new float3(Size, 0, Size * Mathf.Sqrt(3) / 2));
         }
@@ -41,6 +45,7 @@ namespace Game.Level.Systems
 
         public void Clear()
         {
+            // Container can clean up, do we need more often?
             if (_gameObject)
                 GameObject.Destroy(_gameObject);
 
@@ -52,7 +57,7 @@ namespace Game.Level.Systems
 
         public void SpawnMap(int left, int right, int top, int bottom)
         {
-            _gameObject = new GameObject("HexMap");
+            _gameObject = _spawnSystem.SpawnEmpty("HexMap");
 
             // Need Layout offset update for change root position
             _gameObject.transform.position = Vector3.zero;
