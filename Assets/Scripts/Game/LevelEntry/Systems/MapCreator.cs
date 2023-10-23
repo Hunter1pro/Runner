@@ -1,18 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Utils;
 using HexLib;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.Level.Systems
 {
-    public class MapCreator : IMapCreator
+    public class MapCreator : IMapCreator,  IMapInfo
     {
-        private int _weight;
-        private int _height;
-        
-        private Material _material;
-
         private GameObject _gameObject;
         private Mesh _mesh;
 
@@ -25,24 +21,18 @@ namespace Game.Level.Systems
         public Dictionary<string, Hex> Map { get; private set; } = new Dictionary<string, Hex>();
 
         private ISpawnSystem _spawnSystem;
+        private ICustomLogger _logger;
 
-        public MapCreator(MapCreatorView mapCreatorView, ISpawnSystem spawnSystem)
+        public MapCreator(MapCreatorView mapCreatorView, ISpawnSystem spawnSystem, ICustomLogger logger)
         {
             Size = mapCreatorView.Size;
-            _weight = mapCreatorView.Weight;
-            _height = mapCreatorView.Height;
-            _material = mapCreatorView.Material;
+            _logger = logger;
 
             _spawnSystem = spawnSystem;
             
             _layout = new Layout(Layout.Flat, Size, new float3(Size, 0, Size * Mathf.Sqrt(3) / 2));
         }
-
-        public void SpawnMap()
-        {
-            SpawnMap(0,_weight, 0, _height);
-        }
-
+        
         public void Clear()
         {
             // Container can clean up, do we need more often?
@@ -55,7 +45,7 @@ namespace Game.Level.Systems
             _mesh.Clear();
         }
 
-        public void SpawnMap(int left, int right, int top, int bottom)
+        public void SpawnMap(int left, int right, int top, int bottom, Material material)
         {
             _gameObject = _spawnSystem.SpawnEmpty("HexMap");
 
@@ -63,7 +53,7 @@ namespace Game.Level.Systems
             _gameObject.transform.position = Vector3.zero;
 
             var meshRender = _gameObject.AddComponent<MeshRenderer>();
-            meshRender.sharedMaterial = _material;
+            meshRender.sharedMaterial = material;
 
             _mesh = _gameObject.AddComponent<MeshFilter>().mesh;
 
@@ -75,7 +65,7 @@ namespace Game.Level.Systems
                 {
                     var hex = new Hex(q, r, -q - r);
                     if (Map.Values.ToList().Exists(x => x == hex))
-                        Debug.LogError($"Value is exist q {hex.Q} r {hex.R} s {hex.S}");
+                        _logger.LogError($"Value is exist q {hex.Q} r {hex.R} s {hex.S}");
                     Map.Add(hex.CoordinateId, hex);
                     AddHex(hex);
                 }
@@ -119,5 +109,11 @@ namespace Game.Level.Systems
             _triangles.Add(vertexIndex + 1);
             _triangles.Add(vertexIndex + 2);
         }
+    }
+
+    public interface IMapCreator
+    {
+        void SpawnMap(int left, int right, int top, int bottom, Material material);
+        void Clear();
     }
 }

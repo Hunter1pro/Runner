@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using DIContainer;
 using Game.Level.Systems;
+using Game.Level.Views;
 using Game.Utils;
 using Game.Views;
 using GameObjectService;
@@ -20,6 +21,9 @@ namespace Game
         [SerializeField] 
         private MapCreatorView _mapCreatorView;
 
+        [SerializeField] 
+        private GameLevelView _gameLevelView;
+
         private Container _diContainer;
     
         public override Task Init()
@@ -36,14 +40,20 @@ namespace Game
             
             DIServiceCollection diServiceCollection = new DIServiceCollection();
             diServiceCollection.RegisterSingleton<ILevelCast, LevelCast>();
-            diServiceCollection.RegisterSingleton<IMapCreator, MapCreator>();
+            diServiceCollection.RegisterSingleton<IMapInfo, MapCreator>();
             diServiceCollection.RegisterSingleton<ICustomLogger, Logger>();
             diServiceCollection.RegisterSingleton<ISpawnSystem, SpawnSystem>();
             diServiceCollection.RegisterSingleton<ILevelObjectsContainer, LevelObjectsContainer>();
+            diServiceCollection.RegisterSingleton<IGameLevelSystem, GameLevelSystem>();
             diServiceCollection.RegisterSingleton(_levelCastView);
             diServiceCollection.RegisterSingleton(_mapCreatorView);
+            diServiceCollection.RegisterSingleton(_gameLevelView);
 
-            return diServiceCollection.GenerateContainer();
+            var container = diServiceCollection.GenerateContainer();
+
+            container.GetService<GameLevelSystem>();
+
+            return container;
         }
     }
 }

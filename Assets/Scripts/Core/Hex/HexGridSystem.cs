@@ -16,10 +16,10 @@ namespace HexLib
 
         private Dictionary<string, Hex> _map = new Dictionary<string, Hex>();
 
-        public HexGridSystem(IMapCreator mapCreator)
+        public HexGridSystem(IMapInfo mapInfo)
         {
-            _size = mapCreator.Size;
-            _map = mapCreator.Map;
+            _size = mapInfo.Size;
+            _map = mapInfo.Map;
 
             _layout = new Layout(Layout.Flat, _size, new float3(_size, 0, _size * Mathf.Sqrt(3) / 2));
 
