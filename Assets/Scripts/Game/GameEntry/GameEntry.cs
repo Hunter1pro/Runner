@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using DIContainerLib;
 using Game.Level.Systems;
+using Game.Systems;
 using Game.Utils;
 using Game.Views;
 using GameObjectService;
@@ -49,6 +50,13 @@ namespace Game
             var characterAsset = await downloadBundle.DownloadAsset(_gameEntryView.CharacterAsset);
             var characterInstance = GameObject.Instantiate(characterAsset,
                 hexGridSystem.HexToPosition(levelProvider.levelProvider.LevelData.StartCoordinate), Quaternion.identity);
+
+            var moveComponent = new MoveComponent(characterInstance.GetComponent<CharacterAnim>(), hexGridSystem);
+
+            var path = hexGridSystem.GetPath(hexGridSystem.HexToPosition(levelProvider.levelProvider.LevelData.StartCoordinate),
+                hexGridSystem.HexToPosition(levelProvider.levelProvider.LevelData.EndCoordinate));
+            
+            moveComponent.Move(path);
             
             _gameEntryView.VirtualCamera.Follow = characterInstance.transform;
             _gameEntryView.VirtualCamera.LookAt = characterInstance.transform;
