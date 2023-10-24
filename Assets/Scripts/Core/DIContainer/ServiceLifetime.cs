@@ -1,4 +1,4 @@
-namespace DIContainer
+namespace DIContainerLib
 {
     public enum ServiceLifetime
     {

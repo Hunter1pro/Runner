@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DIContainer;
+using DIContainerLib;
 using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Level.Views;

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using DIContainer;
+using DIContainerLib;
 using Game.Editor.Systems;
 using Game.Editor.Systems.Views;
 using Game.Level.Data;

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DIContainer
+namespace DIContainerLib
 {
-    public class Container : IGraph<ServiceDescriptor>, IDisposable
+    public class DIContainer : IGraph<ServiceDescriptor>, IDisposable
     {
         private List<ServiceDescriptor> _serviceDescriptors;
         private List<object> _transientImplementations = new List<object>();
@@ -13,7 +13,7 @@ namespace DIContainer
 
         private bool _enableLogs = false;
 
-        public Container(List<ServiceDescriptor> serviceDescriptors)
+        public DIContainer(List<ServiceDescriptor> serviceDescriptors)
         {
             _serviceDescriptors = serviceDescriptors;
         }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DIContainer
+namespace DIContainerLib
 {
     public interface IGraph<T>
     {

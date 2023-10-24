@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace DIContainer
+namespace DIContainerLib
 {
     public class DIServiceCollection : IDisposable
     {
         private List<ServiceDescriptor> _serviceDescriptors = new List<ServiceDescriptor>();
 
-        private List<Container> _diContainers = new List<Container>();
+        private List<DIContainer> _diContainers = new List<DIContainer>();
 
         public void RegisterSingleton<TService>()
         {
@@ -44,9 +44,9 @@ namespace DIContainer
             _serviceDescriptors.Add(new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Transient));
         }
 
-        public Container GenerateContainer()
+        public DIContainer GenerateContainer()
         {
-            var diContainer = new Container(_serviceDescriptors);
+            var diContainer = new DIContainer(_serviceDescriptors);
             _diContainers.Add(diContainer);
             return diContainer;
         }

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using DIContainer;
+using DIContainerLib;
 using Game.Boot;
 using Game.Level.Systems;
 using Game.Utils;
@@ -20,20 +20,20 @@ namespace Game
         [SerializeField] 
         private LevelCastView _levelCastView;
 
-        private Container _diContainer;
+        private DIContainer diDiContainer;
     
         public override Task Init()
         {
             _rootEntry = GetSystem<RootEntry>();
-            _diContainer = GenerateLevelServices();
+            diDiContainer = GenerateLevelServices();
             
             return Task.CompletedTask;
         }
 
-        private Container GenerateLevelServices()
+        private DIContainer GenerateLevelServices()
         {
-            if (_diContainer != null)
-                _diContainer.Dispose();
+            if (diDiContainer != null)
+                diDiContainer.Dispose();
 
             var levelContainer = _rootEntry.ResolveLevelProvider();
             
@@ -70,10 +70,10 @@ namespace Game
         {
             if (Input.GetMouseButtonDown(0))
             {
-                var touch = _diContainer.GetService<ILevelCast>().Touch();
+                var touch = diDiContainer.GetService<ILevelCast>().Touch();
                 if (touch.exist)
                 {
-                    var hex = _diContainer.GetService<HexGridSystem>().GetHex(touch.hit.point);
+                    var hex = diDiContainer.GetService<HexGridSystem>().GetHex(touch.hit.point);
                     
                     Debug.Log($"Q {hex.Q}, R {hex.R} S {hex.S}");
                 }

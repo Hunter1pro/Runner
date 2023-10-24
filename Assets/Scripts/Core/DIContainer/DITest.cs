@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace DIContainer
+namespace DIContainerLib
 {
     public class DITest : MonoBehaviour
     {
