@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Game.Utils;
 using HexLib;
 using Unity.Mathematics;
@@ -11,8 +13,13 @@ namespace Game.Level.Systems
     {
         private IMapCreator _mapCreator;
         private ISpawnSystem _spawnSystem;
+        private IDownloadBundle _downloadBundle;
+        private ILevelObjectsContainer _levelObjectsContainer;
+        private ILevelProvider _levelProvider;
         private HexGridSystem _hexGridSystem;
         private ICustomLogger _logger;
+        
+        private Dictionary<string, Hex> _currentMap = new ();
         
         // List possible levels
         // SaveSystem
@@ -21,47 +28,38 @@ namespace Game.Level.Systems
         // Level Props with Trigger kill/damage
         // Level Bonus Touch
 
-        public GameLevelSystem(IMapCreator mapCreator, HexGridSystem hexGridSystem, ISpawnSystem spawnSystem, ICustomLogger logger)
+        public GameLevelSystem(IMapCreator mapCreator, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem, ILevelProvider levelProvider, ISpawnSystem spawnSystem, 
+            ILevelObjectsContainer levelObjectsContainer, ICustomLogger logger)
         {
             _mapCreator = mapCreator;
             _spawnSystem = spawnSystem;
+            _downloadBundle = downloadBundle;
+            _levelObjectsContainer = levelObjectsContainer;
+            _levelProvider = levelProvider;
             _hexGridSystem = hexGridSystem;
             _logger = logger;
         }
 
-        public GameObject SpawnLevel(LevelData levelData)
+        public async Task SpawnLevel(Material material)
         {
-            var mapGameObject = _spawnSystem.SpawnEmpty("HexMap");
+            // When we have load level system create map object here
+            var mapGameObject = _mapCreator.SpawnMap(_levelProvider.HexMap, material);
+            _levelObjectsContainer.AddLevelObject(mapGameObject);
 
-            GameObject level = _mapCreator.SpawnMap(mapGameObject, 0, levelData.Weight, 0, levelData.Height, levelData.Material);
-
-            int height = levelData.NextObstacleDistance +
-                         Random.Range(-levelData.RandomRangeDistance, levelData.RandomRangeDistance + 1);
-
-            var rootHex = _hexGridSystem.GetHex(float3.zero);
-            var hexList = _hexGridSystem.GetHexAround(float3.zero, height);
-
-            var existHexList = hexList.Where(hex => _hexGridSystem.ExistInMap(hex) && rootHex.Distance(hex) >= height).ToList();
-            
-            if (existHexList.Count > 0)
+            foreach (var obstacle in _levelProvider.LevelData.ObstaclesDatas)
             {
-                var obstacle = _spawnSystem.Spawn(levelData.ObstacleAssets[Random.Range(0, levelData.ObstacleAssets.Count)], 
-                    mapGameObject.transform);
-
-                obstacle.transform.position = _hexGridSystem.HexToPosition(existHexList[Random.Range(0, existHexList.Count)]);
+                var obstacleAsset = await _downloadBundle.DownloadAsset(obstacle.AssetAddress);
+                var obstacleInstance = GameObject.Instantiate(obstacleAsset,
+                    _hexGridSystem.HexToPosition(Hex.StringToHex(obstacle.Coordinate)), Quaternion.identity);
+                
+                _levelObjectsContainer.AddLevelObject(obstacleInstance);
             }
-            else
-            {
-                _logger.LogError($"{nameof(GameLevelSystem)} Hex not found for spawning obstacle");
-            }
-            
-            return level;
         }
     }
 
     public interface IGameLevelSystem
     {
-        GameObject SpawnLevel(LevelData levelData);
+        Task SpawnLevel(Material material);
     }
 }
 

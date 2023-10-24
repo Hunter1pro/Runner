@@ -11,14 +11,14 @@ namespace Game.Utils
         {
             if (_logEnabled is false) return;
         
-            Debug.Log($"version: {Application.version}\n{value}");
+            Debug.Log($"{value}\nversion: {Application.version}");
         }
         
         public void LogError(string value)
         {
             if (_logEnabled is false) return;
         
-            Debug.LogError($"version: {Application.version}\n{value}");
+            Debug.LogError($"{value}\nversion: {Application.version}");
         }
     }
 

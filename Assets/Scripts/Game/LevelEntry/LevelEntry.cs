@@ -1,8 +1,7 @@
-using System.Linq;
 using System.Threading.Tasks;
 using DIContainer;
+using Game.Boot;
 using Game.Level.Systems;
-using Game.Level.Views;
 using Game.Utils;
 using Game.Views;
 using GameObjectService;
@@ -16,19 +15,16 @@ namespace Game
     {
         protected override int _initOrder { get; } = -1;
 
+        private RootEntry _rootEntry;
+        
         [SerializeField] 
         private LevelCastView _levelCastView;
-
-        [SerializeField] 
-        private MapCreatorView _mapCreatorView;
-
-        [SerializeField] 
-        private GameLevelView _gameLevelView;
 
         private Container _diContainer;
     
         public override Task Init()
         {
+            _rootEntry = GetSystem<RootEntry>();
             _diContainer = GenerateLevelServices();
             
             return Task.CompletedTask;
@@ -39,21 +35,24 @@ namespace Game
             if (_diContainer != null)
                 _diContainer.Dispose();
 
-            Logger logger = new Logger();
-            MapCreator mapCreator = new MapCreator(_mapCreatorView, logger);
+            var levelContainer = _rootEntry.ResolveLevelProvider();
             
             DIServiceCollection diServiceCollection = new DIServiceCollection();
             
-            diServiceCollection.RegisterSingleton<IMapInfo, MapCreator>(mapCreator);
-            diServiceCollection.RegisterSingleton<IMapCreator, MapCreator>(mapCreator);
-            diServiceCollection.RegisterSingleton<ICustomLogger, Logger>(logger);
+            diServiceCollection.RegisterSingleton<IMapCreator, MapCreator>();
+            diServiceCollection.RegisterSingleton<ICustomLogger, Logger>();
             diServiceCollection.RegisterSingleton<ILevelCast, LevelCast>();
             diServiceCollection.RegisterSingleton<ISpawnSystem, SpawnSystem>();
+            diServiceCollection.RegisterSingleton<IDownloadBundle, DownloadBundle>();
             diServiceCollection.RegisterSingleton<ILevelObjectsContainer, LevelObjectsContainer>();
             diServiceCollection.RegisterSingleton<HexGridSystem>();
             diServiceCollection.RegisterSingleton<IGameLevelSystem, GameLevelSystem>();
+            
+            diServiceCollection.RegisterSingleton<ILevelProvider, LevelProvider>(levelContainer.levelProvider);
+            diServiceCollection.RegisterSingleton<IMapInfo, LevelProvider>(levelContainer.levelProvider);
+            diServiceCollection.RegisterSingleton(levelContainer.layout);
+
             diServiceCollection.RegisterSingleton(_levelCastView);
-            diServiceCollection.RegisterSingleton(_gameLevelView);
 
             var container = diServiceCollection.GenerateContainer();
 
@@ -62,7 +61,7 @@ namespace Game
             // Save/Load Level
             // LevelEditor is Simpler than trying to calc level by random weights
             // with obstacle and bonus weights
-            gameLevelSystem.SpawnLevel(_gameLevelView.LevelDatas.First());
+            gameLevelSystem.SpawnLevel(levelContainer.material);
 
             return container;
         }

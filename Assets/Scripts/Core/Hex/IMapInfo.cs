@@ -4,7 +4,6 @@ namespace HexLib
 {
     public interface IMapInfo
     {
-        int Size  { get; }
-        Dictionary<string, Hex> Map { get; }
+        Dictionary<string, Hex> HexMap { get; }
     }
 }

@@ -8,7 +8,7 @@ namespace Game.Level.Views
     public class GameLevelView 
     { 
         [field: SerializeField] 
-        public List<LevelData> LevelDatas { get; private set; }
+        public LevelTestData LevelData { get; private set; }
     }
 }
 

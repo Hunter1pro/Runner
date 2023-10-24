@@ -1,34 +1,24 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace HexLib
 {
-    // Spawn or create components and objects in runtime
-    public class HexGridSystem : IDisposable
+    public class HexGridSystem
     {
-        [Obsolete("Layout Dublicate with MapCreator")]
         private Layout _layout;
-        [Obsolete("Remove, make method lifetime")]
         private IMapInfo _mapInfo;
-
-        // !Move to service lifetime
-        // private HexPathfinding<Hex> _pathfinding;
+        private HexPathfinding<Hex> _pathfinding;
         
-        [Obsolete("Not Exist on Creator lifetime move to method lifetime^")]
-        private Dictionary<string, Hex> _map = new Dictionary<string, Hex>();
-
-        public HexGridSystem(IMapInfo mapInfo)
+        public HexGridSystem(Layout layout, IMapInfo mapInfo)
         {
-            var size = mapInfo.Size;
-            //_map = mapInfo.Map;
+            _layout = layout;
             _mapInfo = mapInfo;
-            _layout = new Layout(Layout.Flat, size, new float3(size, 0, size * Mathf.Sqrt(3) / 2));
 
-            // var neighbours = new GetNeigboursHex(_map.Values.ToList());
-            //
-            // _pathfinding = new HexPathfinding<Hex>(neighbours);
+            var neighbours = new GetNeigboursHex(mapInfo.HexMap.Values.ToList());
+            
+            _pathfinding = new HexPathfinding<Hex>(neighbours);
         }
 
         public float3 GetHexPoint(float3 hit)
@@ -40,7 +30,7 @@ namespace HexLib
             return point;
         }
 
-        public Hex GetHexByHash(string hash) => _mapInfo.Map[hash];
+        public Hex GetHexByHash(string hash) => _mapInfo.HexMap[hash];
 
         public float3 GetHexPoint(string hash) => HexToPosition(GetHexByHash(hash));
 
@@ -62,8 +52,7 @@ namespace HexLib
         {
             var hex = new Hex(q, r, s);
             
-            Debug.Log($"#GetHex Count{_mapInfo.Map.Count} {hex}");
-            if (_mapInfo.Map.TryGetValue(hex.CoordinateId, out var result))
+            if (_mapInfo.HexMap.TryGetValue(hex.CoordinateId, out var result))
             {
                 return (result, true);
             }
@@ -75,19 +64,21 @@ namespace HexLib
         {
             var hex = _layout.PixelToHex(to).HexRound();
 
-            var point = _layout.HexToPixel(hex);
+            var map = _mapInfo.HexMap;
 
-            // var pathResult = _pathfinding.FindPath(_map.Values.FirstOrDefault(x => x == _layout.PixelToHex(from).HexRound()), _map.FirstOrDefault(x => x.Value == hex).Value, _map.Values.ToList());
-            // if (pathResult != null)
-            // {
-            //     for (int i = 0; i < pathResult.Count - 1; i++)
-            //     {
-            //         Debug.DrawLine(_layout.HexToPixel(pathResult[i]), _layout.HexToPixel(pathResult[i + 1]), Color.blue, 5);
-            //     }
-            //     Debug.Log($"PathResult: {pathResult.Count}");
-            //
-            //     return pathResult.Select(x => _layout.HexToPixel(x)).ToList();
-            // }
+            var pathResult = _pathfinding.FindPath(map.Values.FirstOrDefault(x => x == _layout.PixelToHex(from).HexRound()), 
+                map.FirstOrDefault(x => x.Value == hex).Value, map.Values.ToList());
+            
+            if (pathResult != null)
+            {
+                for (int i = 0; i < pathResult.Count - 1; i++)
+                {
+                    Debug.DrawLine(_layout.HexToPixel(pathResult[i]), _layout.HexToPixel(pathResult[i + 1]), Color.blue, 5);
+                }
+                Debug.Log($"PathResult: {pathResult.Count}");
+            
+                return pathResult.Select(x => _layout.HexToPixel(x)).ToList();
+            }
 
             throw new System.Exception("Path not found");
         }
@@ -110,14 +101,9 @@ namespace HexLib
             return result;
         }
 
-        public bool ExistInMap(Hex hex)
+        public bool ExistInMap(Hex hex, Dictionary<string, Hex> map)
         {
-            return _mapInfo.Map.ContainsKey(hex.ToString());
-        }
-
-        public void Dispose()
-        {
-            _mapInfo.Map.Clear();
+            return map.ContainsKey(hex.ToString());
         }
     }
 }
