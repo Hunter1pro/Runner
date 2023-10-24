@@ -18,7 +18,6 @@ namespace Game.Boot
     {
         protected override int _initOrder { get; } = -2;
         
-        [Obsolete("Save to File and remove")]
         [SerializeField] 
         private GameLevelView _gameLevelView;
 
@@ -48,12 +47,9 @@ namespace Game.Boot
 
             var container = diServiceCollection.GenerateContainer();
 
-            // load from file/server
-
             var mapCreator = container.GetService<IMapCreator>();
             var mapGameObject = new GameObject("HexMap");
             
-            // When we have load level map creator move to GameLevelSystem
             var levelData = levelDataContainer.LevelDatas.First();
 
             LevelProvider levelProvider = new LevelProvider(levelData);
