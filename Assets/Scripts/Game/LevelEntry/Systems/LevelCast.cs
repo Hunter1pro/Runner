@@ -36,10 +36,10 @@ namespace Game.Level.Systems
         public (bool exist, RaycastHit hit) Touch(RectTransform ignorePanel)
         {
             RaycastHit hitInfo = default;
-            var mousePos = Input.mousePosition;
+            var mousePos = MouseScreenPosition();
             bool result = false;
             
-            if (IsOnPanel.Check(ignorePanel, Input.mousePosition) is false)
+            if (IsOnPanel.Check(ignorePanel, mousePos) is false)
             {
                 result = Physics.Raycast(_camera.ScreenPointToRay(mousePos), out hitInfo, _distance, _layerMask);
             }
