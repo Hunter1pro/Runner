@@ -50,7 +50,7 @@ namespace Game.Level.Systems
             {
                 var obstacleAsset = await _downloadBundle.DownloadAsset(obstacle.AssetAddress);
                 var obstacleInstance = GameObject.Instantiate(obstacleAsset,
-                    _hexGridSystem.HexToPosition(Hex.StringToHex(obstacle.Coordinate)), Quaternion.identity);
+                    _hexGridSystem.HexToPosition(obstacle.Coordinate), Quaternion.identity);
                 
                 _levelObjectsContainer.AddLevelObject(obstacleInstance);
             }

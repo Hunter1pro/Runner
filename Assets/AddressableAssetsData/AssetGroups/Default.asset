@@ -29,6 +29,10 @@ MonoBehaviour:
     m_Address: Obstacle_3
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 412b92d4feeb9c548bfa98f62c4d1022
+    m_Address: unitychan
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4c67e311301884da4b265b4208257e77, type: 2}
   m_SchemaSet:

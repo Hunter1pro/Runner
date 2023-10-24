@@ -22,6 +22,8 @@ namespace Game.Editor.Systems
         }
     }
     
+    public enum SelectActionType { None, SpawnObstacles, StartPoint, EndPoint }
+    
     public class LevelEditorService
     {
         private IMapCreator _mapCreator;
@@ -33,6 +35,8 @@ namespace Game.Editor.Systems
         private LevelContainerFile _levelContainerFile;
         private LevelDataContainer _levelDataContainer;
         private Layout _layout;
+
+        private SelectActionType _selectActionType;
 
         private CurrentLevelContext _currentLevelContext;
 
@@ -86,6 +90,9 @@ namespace Game.Editor.Systems
                 _levelDataContainer.LevelDatas.Add(currentLevelContext.CurrentLevel);
                 _hexGridSystem = new HexGridSystem(_layout, new LevelProvider(currentLevelContext.CurrentLevel));
                 
+                _editorView.StartPoint.transform.position = _hexGridSystem.HexToPosition(currentLevelContext.CurrentLevel.StartCoordinate);
+                _editorView.EndPoint.transform.position = _hexGridSystem.HexToPosition(currentLevelContext.CurrentLevel.EndCoordinate);
+                
                 SpawnLevelButton($"Level_{_levelDataContainer.LevelDatas.IndexOf(currentLevelContext.CurrentLevel)}", () =>
                 {
                     LoadLevel(currentLevelContext.CurrentLevel);
@@ -96,7 +103,12 @@ namespace Game.Editor.Systems
 
                 _currentLevelContext = currentLevelContext;
             });
-            
+
+            SpawnActionButton("None", () => { _selectActionType = SelectActionType.None; });
+            SpawnActionButton("SpawnObstacles", () => { _selectActionType = SelectActionType.SpawnObstacles; });
+            SpawnActionButton("StartPoint", () => { _selectActionType = SelectActionType.StartPoint;});
+            SpawnActionButton("EndPoint", () => { _selectActionType = SelectActionType.EndPoint; });
+
             SpawnActionButton("Save", () =>
             {
                 SaveSystem<LevelDataContainer>.Save(_levelContainerFile, _levelDataContainer);
@@ -107,17 +119,32 @@ namespace Game.Editor.Systems
         {
             if (_currentLevelContext == null) return;
             
-            var result = _levelCast.Touch();
+            var result = _levelCast.Touch(_editorView.Panel);
 
-            if (result.exist)
+            if (result.exist is false) return;
+
+            switch (_selectActionType)
             {
-                var hex = _hexGridSystem.GetHex(result.hit.point);
-                var hexPosition = _hexGridSystem.GetHexPoint(result.hit.point);
-                var obstacles = _editorView.LevelTestData.ObstacleAssets;
-                var assetAddress = obstacles[Random.Range(0, obstacles.Count)];
-                var asset = await _downloadBundle.DownloadAsset(assetAddress);
-                var obstacle = GameObject.Instantiate(asset, hexPosition, Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
-                _currentLevelContext.CurrentLevel.ObstaclesDatas.Add(new ObstaclesData { AssetAddress = assetAddress, Coordinate = hex.ToString()});
+                case SelectActionType.StartPoint:
+                    _editorView.StartPoint.transform.position = _hexGridSystem.GetHexPoint(result.hit.point);
+                    _currentLevelContext.CurrentLevel.StartCoordinate = _hexGridSystem.GetHex(result.hit.point);
+                    break;
+                case SelectActionType.EndPoint:
+                    _editorView.EndPoint.transform.position = _hexGridSystem.GetHexPoint(result.hit.point);
+                    _currentLevelContext.CurrentLevel.EndCoordinate = _hexGridSystem.GetHex(result.hit.point);
+                    break;
+                case SelectActionType.SpawnObstacles:
+                    if (result.exist)
+                    {
+                        var hex = _hexGridSystem.GetHex(result.hit.point);
+                        var hexPosition = _hexGridSystem.GetHexPoint(result.hit.point);
+                        var obstacles = _editorView.LevelTestData.ObstacleAssets;
+                        var assetAddress = obstacles[Random.Range(0, obstacles.Count)];
+                        var asset = await _downloadBundle.DownloadAsset(assetAddress);
+                        var obstacle = GameObject.Instantiate(asset, hexPosition, Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+                        _currentLevelContext.CurrentLevel.ObstaclesDatas.Add(new ObstaclesData { AssetAddress = assetAddress, Coordinate = hex});
+                    }
+                    break;
             }
         }
 
@@ -149,11 +176,14 @@ namespace Game.Editor.Systems
 
             _currentLevelContext.CurrentMapObject = 
                 _mapCreator.SpawnMap(levelData.HexMap, _editorView.LevelTestData.Material);
+            
+            _editorView.StartPoint.transform.position = _hexGridSystem.HexToPosition(_currentLevelContext.CurrentLevel.StartCoordinate);
+            _editorView.EndPoint.transform.position = _hexGridSystem.HexToPosition(_currentLevelContext.CurrentLevel.EndCoordinate);
 
             foreach (var obstacle in _currentLevelContext.CurrentLevel.ObstaclesDatas)
             {
                 var asset = await _downloadBundle.DownloadAsset(obstacle.AssetAddress);
-                var obstacleInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(Hex.StringToHex(obstacle.Coordinate)), 
+                var obstacleInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(obstacle.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
             }
         }
