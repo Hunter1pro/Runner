@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6513cc0a7fa842e2b2c23f43cd82b7d, type: 3}
+  m_Name: LevelData_2
+  m_EditorClassIdentifier: 
+  <Material>k__BackingField: {fileID: 2100000, guid: dc27d93dd758145699c5355b705b7bd4, type: 2}
+  <Height>k__BackingField: 100
+  <Weight>k__BackingField: 3
+  <NextObstacleDistance>k__BackingField: 10
+  <RandomRangeDistance>k__BackingField: 3
+  <ObstacleAssets>k__BackingField:
+  - {fileID: 4336146599535910437, guid: f737ac90c70a04705994dceda150785b, type: 3}
+  - {fileID: 4336146599535910437, guid: 4c89805a5f8974ab98c13d9c9e27019a, type: 3}
+  - {fileID: 4336146599535910437, guid: 06688985144084be5b991ed42c7c155d, type: 3}

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DIContainer
+namespace DIContainerLib
 {
     public class DIContainer : IGraph<ServiceDescriptor>, IDisposable
     {
         private List<ServiceDescriptor> _serviceDescriptors;
         private List<object> _transientImplementations = new List<object>();
         private List<object> _singletonImplementations = new List<object>();
+
+        private bool _enableLogs = false;
 
         public DIContainer(List<ServiceDescriptor> serviceDescriptors)
         {
@@ -20,7 +22,7 @@ namespace DIContainer
         {
             var descriptor = _serviceDescriptors.SingleOrDefault(x => x.ServiceType == serviceType);
 
-            UnityEngine.Debug.Log($"{serviceType.Name}");
+            LogInfo($"{serviceType.Name}");
 
             if (descriptor == null)
                 throw new NotImplementedException($"Service of type {serviceType.Name} is not registered");
@@ -98,7 +100,7 @@ namespace DIContainer
 
             if (constructorDependencyInfo != null)
             {
-                UnityEngine.Debug.Log($"{s.ImplementationType}");
+                LogInfo($"{s.ImplementationType}");
 
                 var parameters = constructorDependencyInfo.GetParameters().Select(x => x.ParameterType);
 
@@ -114,6 +116,12 @@ namespace DIContainer
 
             return Enumerable.Empty<ServiceDescriptor>();
 
+        }
+
+        private void LogInfo(string value)
+        {
+            if (_enableLogs)
+                UnityEngine.Debug.Log($"{value}");
         }
 
         public void Dispose()

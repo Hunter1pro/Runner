@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default
+  m_EditorClassIdentifier: 
+  m_GroupName: Default
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0e3386b644a014d0da674946f99b7f67
+  m_SerializeEntries:
+  - m_GUID: f737ac90c70a04705994dceda150785b
+    m_Address: Obstacle_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4c89805a5f8974ab98c13d9c9e27019a
+    m_Address: Obstacle_2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 06688985144084be5b991ed42c7c155d
+    m_Address: Obstacle_3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 4c67e311301884da4b265b4208257e77, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 67547824112354e5da7f7f4a56e9b986, type: 2}
+    - {fileID: 11400000, guid: 9af1d433db5324cefb4774d6ffcd77cb, type: 2}

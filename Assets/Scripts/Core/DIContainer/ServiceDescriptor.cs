@@ -1,6 +1,6 @@
 using System;
 
-namespace DIContainer
+namespace DIContainerLib
 {
     public class ServiceDescriptor
     {

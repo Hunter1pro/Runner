@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -6,25 +5,19 @@ using UnityEngine;
 
 namespace HexLib
 {
-    // Spawn or create components and objects in runtime
-    public class HexGridSystem : IDisposable
+    public class HexGridSystem
     {
-        private float _size;
         private Layout _layout;
-
+        private IMapInfo _mapInfo;
         private HexPathfinding<Hex> _pathfinding;
-
-        private Dictionary<string, Hex> _map = new Dictionary<string, Hex>();
-
-        public HexGridSystem(IMapCreator mapCreator)
+        
+        public HexGridSystem(Layout layout, IMapInfo mapInfo)
         {
-            _size = mapCreator.Size;
-            _map = mapCreator.Map;
+            _layout = layout;
+            _mapInfo = mapInfo;
 
-            _layout = new Layout(Layout.Flat, _size, new float3(_size, 0, _size * Mathf.Sqrt(3) / 2));
-
-            var neighbours = new GetNeigboursHex(_map.Values.ToList());
-
+            var neighbours = new GetNeigboursHex(mapInfo.HexMap.Values.ToList());
+            
             _pathfinding = new HexPathfinding<Hex>(neighbours);
         }
 
@@ -37,7 +30,7 @@ namespace HexLib
             return point;
         }
 
-        public Hex GetHexByHash(string hash) => _map[hash];
+        public Hex GetHexByHash(string hash) => _mapInfo.HexMap[hash];
 
         public float3 GetHexPoint(string hash) => HexToPosition(GetHexByHash(hash));
 
@@ -55,25 +48,27 @@ namespace HexLib
             return hex;
         }
 
-        public Hex GetHex(int q, int r, int s)
+        public (Hex hex, bool found) GetHex(int q, int r, int s)
         {
             var hex = new Hex(q, r, s);
-
-            if (_map.TryGetValue(hex.CoordinateId, out var result))
+            
+            if (_mapInfo.HexMap.TryGetValue(hex.CoordinateId, out var result))
             {
-                return result;
+                return (result, true);
             }
 
-            throw new NullReferenceException($"Hex in coordinates {q} {r} {s} not found");
+            return (hex, false);
         }
 
         public List<float3> GetPath(float3 from, float3 to)
         {
             var hex = _layout.PixelToHex(to).HexRound();
 
-            var point = _layout.HexToPixel(hex);
+            var map = _mapInfo.HexMap;
 
-            var pathResult = _pathfinding.FindPath(_map.Values.FirstOrDefault(x => x == _layout.PixelToHex(from).HexRound()), _map.FirstOrDefault(x => x.Value == hex).Value, _map.Values.ToList());
+            var pathResult = _pathfinding.FindPath(map.Values.FirstOrDefault(x => x == _layout.PixelToHex(from).HexRound()), 
+                map.FirstOrDefault(x => x.Value == hex).Value, map.Values.ToList());
+            
             if (pathResult != null)
             {
                 for (int i = 0; i < pathResult.Count - 1; i++)
@@ -81,7 +76,7 @@ namespace HexLib
                     Debug.DrawLine(_layout.HexToPixel(pathResult[i]), _layout.HexToPixel(pathResult[i + 1]), Color.blue, 5);
                 }
                 Debug.Log($"PathResult: {pathResult.Count}");
-
+            
                 return pathResult.Select(x => _layout.HexToPixel(x)).ToList();
             }
 
@@ -106,9 +101,9 @@ namespace HexLib
             return result;
         }
 
-        public void Dispose()
+        public bool ExistInMap(Hex hex, Dictionary<string, Hex> map)
         {
-            _map.Clear();
+            return map.ContainsKey(hex.ToString());
         }
     }
 }

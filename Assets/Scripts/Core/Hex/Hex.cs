@@ -66,6 +66,19 @@ namespace HexLib
         public static bool operator == (Hex first, Hex second) => (first.Q == second.Q && first.R == second.R && first.S == second.S);
         public static bool operator != (Hex first, Hex second) => !(first == second);
         public static Hex Add(Hex first, Hex second) => new Hex(first.Q + second.Q, first.R + second.R, first.S + second.S);
+
+        public static Hex StringToHex(string coordinateId)
+        {
+            if (string.IsNullOrEmpty(coordinateId))
+                throw new Exception("string is null or empty");
+
+            var coordinates = coordinateId.Split(";");
+            
+            if (coordinates.Length < 2)
+                throw new Exception("coordinate must be 3");
+
+            return new Hex(int.Parse(coordinates[0]), int.Parse(coordinates[1]), int.Parse(coordinates[2]));
+        }
     
         public override string ToString() => CoordinateId;
     }
