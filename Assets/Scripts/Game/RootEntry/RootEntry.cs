@@ -23,33 +23,23 @@ namespace Game.Boot
 
         private LevelContainerFile _levelContainerFile = new LevelContainerFile();
         
-        public override Task Init()
+        public override async Task Init()
         {
-            // load or download files
-            
-            return Task.CompletedTask;
+            var levelContainer = ResolveLevelProvider();
+
+            GetSystem<LevelEntry>().GenerateLevelServices(levelContainer);
+            await GetSystem<GameEntry>().GenerateGameServices((levelContainer));
         }
 
-        public (ILevelProvider levelProvider, Layout layout, Material material) ResolveLevelProvider()
+        private (LevelProvider levelProvider, Layout layout, Material material) ResolveLevelProvider()
         {
             var levelDataContainer = SaveSystem<LevelDataContainer>.Load(_levelContainerFile);
 
             if (levelDataContainer == null && levelDataContainer.LevelDatas.Count > 0)
                 throw new Exception("LevelDataContainer File Not Loaded");
             
-            DIServiceCollection diServiceCollection = new DIServiceCollection();
-            
             var layout = new Layout(Layout.Flat, levelDataContainer.Size, new float3(levelDataContainer.Size, 0, levelDataContainer.Size * Mathf.Sqrt(3) / 2));
 
-            diServiceCollection.RegisterSingleton<IMapCreator, MapCreator>();
-            diServiceCollection.RegisterSingleton<ICustomLogger, Logger>();
-            diServiceCollection.RegisterSingleton(layout);
-
-            var container = diServiceCollection.GenerateContainer();
-
-            var mapCreator = container.GetService<IMapCreator>();
-            var mapGameObject = new GameObject("HexMap");
-            
             var levelData = levelDataContainer.LevelDatas.First();
 
             LevelProvider levelProvider = new LevelProvider(levelData);
