@@ -32,6 +32,21 @@ namespace Game.Level.Systems
             bool result = Physics.Raycast(_camera.ScreenPointToRay(MouseScreenPosition()), out hitInfo, _distance, _layerMask);
             return (result, hitInfo);
         }
+
+        public (bool exist, RaycastHit hit) Touch(RectTransform ignorePanel)
+        {
+            RaycastHit hitInfo = default;
+            var mousePos = Input.mousePosition;
+            bool result = false;
+            
+            if (IsOnPanel.Check(ignorePanel, Input.mousePosition) is false)
+            {
+                result = Physics.Raycast(_camera.ScreenPointToRay(mousePos), out hitInfo, _distance, _layerMask);
+            }
+            
+            return (result, hitInfo);
+        }
+
         public Vector3 MouseScreenPosition()
             => new Vector3(Mouse.current.position.value.x, Mouse.current.position.value.y, _camera.nearClipPlane);
     }
@@ -40,6 +55,7 @@ namespace Game.Level.Systems
     {
         (bool exist, RaycastHit hit) Touch(Ray ray);
         (bool exist, RaycastHit hit) Touch();
+        (bool exist, RaycastHit hit) Touch(RectTransform ignorePanel);
         Vector3 MouseScreenPosition();
     }
 }

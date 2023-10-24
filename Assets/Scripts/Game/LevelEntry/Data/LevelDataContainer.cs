@@ -13,8 +13,8 @@ namespace Game.Level.Data
 
     public class LevelData
     {
-        public Vector3 StartCoordinate { get; set; }
-        public string EndCoordinate { get; set; }
+        public Hex StartCoordinate { get; set; }
+        public Hex EndCoordinate { get; set; }
 
         public Dictionary<string, Hex> HexMap { get; set; } = new Dictionary<string, Hex>();
 
@@ -25,7 +25,7 @@ namespace Game.Level.Data
     public class ObstaclesData
     {
         public string AssetAddress { get; set; }
-        public string Coordinate { get; set; }
+        public Hex Coordinate { get; set; }
     }
     
     public enum BonusType { Speed, Fly, Etc }
@@ -33,7 +33,7 @@ namespace Game.Level.Data
     public class BonusData
     {
         public string AssetAddress { get; set; }
-        public string CoordinateId { get; set; }
+        public Hex Coordinate { get; set; }
         public BonusType BonusType { get; set; }
     }
 }

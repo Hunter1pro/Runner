@@ -10,6 +10,9 @@ namespace Game.Editor.Systems.Views
     public class EditorView
     {
         [field: SerializeField] 
+        public RectTransform Panel { get; private set; }
+        
+        [field: SerializeField] 
         public Transform LevelsPanelRoot { get; private set; }
 
         [field: SerializeField] 
@@ -26,6 +29,12 @@ namespace Game.Editor.Systems.Views
         
         [field: SerializeField]
         public ButtonItem ButtonItemViewPrefab { get; private set; }
+        
+        [field: SerializeField]
+        public GameObject StartPoint { get; private set; }
+        
+        [field: SerializeField]
+        public GameObject EndPoint { get; private set; }
 
         [field: SerializeField] 
         public LevelTestData LevelTestData { get; private set; }
