@@ -7,6 +7,7 @@ namespace HexLib
     public class GetNeigboursHex : IGetNeigbours<Hex>
     {
         private List<Hex> _map;
+        private bool _logging = false;
 
         public GetNeigboursHex(List<Hex> map)
         {
@@ -34,11 +35,17 @@ namespace HexLib
                 }
                 catch
                 {
-                    // Debug.Log($"Out Of map");
+                    Logging("Out Of map");
                 }
             }
 
             return neighbours;
+        }
+
+        private void Logging(string value)
+        {
+            if (_logging)
+                Debug.Log(value);
         }
     }
 }
