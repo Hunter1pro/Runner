@@ -47,8 +47,8 @@ namespace Game
 
             levelObjectsContainer.AddLevelObject(characterInstance);
 
-            var path = hexGridSystem.GetPath(hexGridSystem.HexToPosition(levelProvider.levelProvider.LevelData.StartCoordinate),
-                hexGridSystem.HexToPosition(levelProvider.levelProvider.LevelData.EndCoordinate));
+            var path = hexGridSystem.GetPath(levelProvider.levelProvider.LevelData.StartCoordinate,
+                levelProvider.levelProvider.LevelData.EndCoordinate);
             
             moveComponent.Move(path);
             moveComponent.SubscribeFinish(moveFinish);
