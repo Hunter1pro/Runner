@@ -9,6 +9,9 @@ namespace Game.Level.Views
     { 
         [field: SerializeField] 
         public LevelTestData LevelData { get; private set; }
+
+        [field: SerializeField] 
+        public int CoinScore { get; private set; } = 20;
     }
 }
 
