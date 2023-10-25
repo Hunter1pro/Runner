@@ -686,7 +686,7 @@ MonoBehaviour:
     <ButtonItemViewPrefab>k__BackingField: {fileID: 8228850311905043478, guid: 6ba792c281b92044a8d213f92d55efe5, type: 3}
     <StartPoint>k__BackingField: {fileID: 298053025}
     <EndPoint>k__BackingField: {fileID: 1078323328}
-    <LevelTestData>k__BackingField: {fileID: 11400000, guid: 61146a4c0be324541bda97c7263a8293, type: 2}
+    <LevelTestData>k__BackingField: {fileID: 11400000, guid: 3eae9a21294bc44a98d6a5fe899b3a70, type: 2}
   _levelCastView:
     <Camera>k__BackingField: {fileID: 963194227}
     <LayerMask>k__BackingField:
@@ -1228,7 +1228,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1586808002}
   m_HandleRect: {fileID: 1586808001}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

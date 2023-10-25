@@ -129,8 +129,8 @@ namespace Game.Editor.Systems
             
             var hex = _hexGridSystem.GetHex(result.hit.point);
 
-            var existInCoordinate = _currentLevelContext.CurrentLevel.ObstaclesDatas.Any(x => x.Coordinate == hex) &&
-                          _currentLevelContext.CurrentLevel.CoinDatas.Any(x => x.Coordinate == hex) &&
+            var existInCoordinate = _currentLevelContext.CurrentLevel.ObstaclesDatas.Any(x => x.Coordinate == hex) ||
+                          _currentLevelContext.CurrentLevel.CoinDatas.Any(x => x.Coordinate == hex) ||
                           _currentLevelContext.CurrentLevel.BonusDatas.Any(x => x.Coordinate == hex);
             
             switch (_selectActionType)
