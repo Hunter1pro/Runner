@@ -4,6 +4,7 @@ using Game.Utils;
 using HexLib;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Game.Systems
 {
@@ -24,6 +25,45 @@ namespace Game.Systems
             _character = character;
             _hexGridSystem = hexGridSystem;
             _speed = speed;
+
+            PlayerInput input = new PlayerInput();
+            input.Enable();
+
+            input.Player.Move.performed += MoveInput;
+        }
+
+        private void MoveInput(InputAction.CallbackContext value)
+        {
+            var moveVector = value.ReadValue<Vector2>();
+
+            if (IsMove is false) return;
+
+            if (moveVector.x > 0)
+            {
+                var currentHex = _hexGridSystem.GetHex(_path[_pathStep]);
+                var nextHex = currentHex.Neighbour(2);
+                var finishHex = _hexGridSystem.GetHex(_path[_path.Count - 1]);
+                var newFinishHex = finishHex.Neighbour(2);
+
+                if (_hexGridSystem.ExistInMap(nextHex) && _hexGridSystem.ExistInMap(newFinishHex))
+                {
+                    _path = _hexGridSystem.GetPath(nextHex, newFinishHex);
+                    _pathStep = 0;
+                }
+            }
+            else if (moveVector.x < 0)
+            {
+                var currentHex = _hexGridSystem.GetHex(_path[_pathStep]);
+                var nextHex = currentHex.Neighbour(5);
+                var finishHex = _hexGridSystem.GetHex(_path[_path.Count - 1]);
+                var newFinishHex = finishHex.Neighbour(5);
+                
+                if (_hexGridSystem.ExistInMap(nextHex) && _hexGridSystem.ExistInMap(newFinishHex))
+                {
+                    _path = _hexGridSystem.GetPath(nextHex, newFinishHex);
+                    _pathStep = 0;
+                }
+            }
         }
 
         public void Move(List<float3> path)

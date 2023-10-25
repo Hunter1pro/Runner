@@ -66,8 +66,15 @@ namespace HexLib
 
             var map = _mapInfo.HexMap;
 
-            var pathResult = _pathfinding.FindPath(map.Values.FirstOrDefault(x => x == _layout.PixelToHex(from).HexRound()), 
-                map.FirstOrDefault(x => x.Value == hex).Value, map.Values.ToList());
+            var startHex = map.Values.FirstOrDefault(x => x == _layout.PixelToHex(from).HexRound());
+            var endHex = map.FirstOrDefault(x => x.Value == hex).Value;
+
+            return GetPath(startHex, endHex);
+        }
+
+        public List<float3> GetPath(Hex startHex, Hex endHex)
+        {
+            var pathResult = _pathfinding.FindPath(startHex, endHex, _mapInfo.HexMap.Values.ToList());
             
             if (pathResult != null)
             {
@@ -101,9 +108,9 @@ namespace HexLib
             return result;
         }
 
-        public bool ExistInMap(Hex hex, Dictionary<string, Hex> map)
+        public bool ExistInMap(Hex hex)
         {
-            return map.ContainsKey(hex.ToString());
+            return _mapInfo.HexMap.ContainsKey(hex.ToString());
         }
     }
 }
