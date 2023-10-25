@@ -43,7 +43,7 @@ namespace Game.Level.Systems
             _logger = logger;
         }
 
-        public async Task SpawnLevel(Material material, Action obstacleTrigger)
+        public async Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger)
         {
             // When we have load level system create map object here
             var mapGameObject = _mapCreator.SpawnMap(_levelProvider.HexMap, material);
@@ -62,12 +62,26 @@ namespace Game.Level.Systems
                 
                 _levelObjectsContainer.AddLevelObject(obstacleInstance);
             }
+
+            foreach (var coin in _levelProvider.LevelData.CoinDatas)
+            {
+                var coinAsset = await _downloadBundle.DownloadAsset(coin.AssetAddress);
+                var coinInstance = GameObject.Instantiate(coinAsset, _hexGridSystem.HexToPosition(coin.Coordinate),
+                    Quaternion.identity);
+                
+                coinInstance.GetComponent<TriggerSubscribe>().Subscribe(PLAYER_TAG, collideObject =>
+                {
+                    coinTrigger?.Invoke(coinInstance);
+                });
+                
+                _levelObjectsContainer.AddLevelObject(coinInstance);
+            }
         }
     }
 
     public interface IGameLevelSystem
     {
-        Task SpawnLevel(Material material, Action obstacleTrigger);
+        Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger);
     }
 }
 

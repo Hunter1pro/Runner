@@ -19,7 +19,14 @@ namespace Game.Level.Data
         public Dictionary<string, Hex> HexMap { get; set; } = new Dictionary<string, Hex>();
 
         public List<ObstaclesData> ObstaclesDatas { get; set; } = new List<ObstaclesData>();
+        public List<CoinData> CoinDatas { get; set; } = new List<CoinData>();
         public List<BonusData> BonusDatas { get; set; } = new List<BonusData>();
+    }
+
+    public class CoinData
+    {
+        public string AssetAddress { get; set; }
+        public Hex Coordinate { get; set; }
     }
     
     public class ObstaclesData

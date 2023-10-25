@@ -26,7 +26,9 @@ namespace Game
             return Task.CompletedTask;
         }
 
-        public (DIContainer diContainer, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem) GenerateLevelServices((LevelProvider levelProvider, Layout layout, Material material) levelContainer, Action obstacleTrigger)
+        public (DIContainer diContainer, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem) GenerateLevelServices(
+            (LevelProvider levelProvider, Layout layout, Material material) levelContainer, 
+            Action obstacleTrigger, Action<GameObject> coinTrigger)
         {
             if (_diContainer != null)
                 _diContainer.Dispose();
@@ -51,11 +53,8 @@ namespace Game
             var container = diServiceCollection.GenerateContainer();
 
             var gameLevelSystem = container.GetService<IGameLevelSystem>();
-
-            // Save/Load Level
-            // LevelEditor is Simpler than trying to calc level by random weights
-            // with obstacle and bonus weights
-            gameLevelSystem.SpawnLevel(levelContainer.material, obstacleTrigger);
+            
+            gameLevelSystem.SpawnLevel(levelContainer.material, obstacleTrigger, coinTrigger);
 
             _diContainer = container;
 
