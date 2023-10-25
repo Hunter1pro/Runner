@@ -24,7 +24,6 @@ namespace Game.Systems
         private List<IMoveFinish> _moveFinished = new List<IMoveFinish>();
         private PlayerInput _playerInput;
 
-        private Vector2 _moveVector;
 
         public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem)
         {
@@ -41,7 +40,13 @@ namespace Game.Systems
         private void MoveInput(InputAction.CallbackContext value)
         {
             var moveVector = value.ReadValue<Vector2>();
+            ChangeDirrection(moveVector);
+        }
 
+        private void ChangeDirrection(Vector2 moveVector)
+        {
+            if (IsMove is false && _pathStep < _path.Count) return;
+            
             if (moveVector.x > 0)
             {
                 var currentHex = _hexGridSystem.GetHex(_path[_pathStep]);
@@ -118,7 +123,7 @@ namespace Game.Systems
                     _pathStep++;
             }
 
-            if (IsMove && _pathStep >= _path.Count)
+            if (IsMove && _pathStep >= _path.Count && _path.Count > 0)
             {
                 _character.PlayIdle();
                 var finalPoint = _path[_path.Count - 1];
