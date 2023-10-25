@@ -34,7 +34,7 @@ namespace Game.Boot
 
             var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
 
-            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger);
+            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger, BonusTrigger);
             _levelContainer = levelContainer.diContainer;
             
             _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
@@ -64,7 +64,7 @@ namespace Game.Boot
             
             var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
 
-            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger);
+            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger, BonusTrigger);
             _levelContainer = levelContainer.diContainer;
             
             _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
@@ -75,6 +75,13 @@ namespace Game.Boot
             // Show Score and Add it
             GameObject.Destroy(coin);
             Debug.Log($"CoinCatched");
+        }
+        
+        private void BonusTrigger(GameObject bonus, BonusType bonusType)
+        {
+            // Apply change speed
+            GameObject.Destroy(bonus);
+            Debug.Log($"BonusTrigger {bonusType}");
         }
 
         public async void MoveFinished(float3 position)
@@ -89,7 +96,7 @@ namespace Game.Boot
                 
                 var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel++);
 
-                var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger);
+                var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger, BonusTrigger);
                 _levelContainer = levelContainer.diContainer;
             
                 _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);

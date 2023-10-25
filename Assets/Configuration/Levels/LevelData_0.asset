@@ -20,3 +20,4 @@ MonoBehaviour:
   - Obstacle_2
   - Obstacle_3
   <CoinAsset>k__BackingField: Coin
+  <SpeedBonusAsset>k__BackingField: Bottle_Endurance

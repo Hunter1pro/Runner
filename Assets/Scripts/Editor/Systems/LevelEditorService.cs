@@ -24,7 +24,7 @@ namespace Game.Editor.Systems
         }
     }
     
-    public enum SelectActionType { None, Obstacles, Coins, StartPoint, EndPoint }
+    public enum SelectActionType { None, Obstacles, Coins, SpeedBonus, StartPoint, EndPoint }
     
     public class LevelEditorService
     {
@@ -109,6 +109,7 @@ namespace Game.Editor.Systems
             SpawnActionButton("None", () => { _selectActionType = SelectActionType.None; });
             SpawnActionButton("Obstacles", () => { _selectActionType = SelectActionType.Obstacles; });
             SpawnActionButton("Coins", () => { _selectActionType = SelectActionType.Coins; });
+            SpawnActionButton("Speed", () => { _selectActionType = SelectActionType.SpeedBonus; });
             SpawnActionButton("StartPoint", () => { _selectActionType = SelectActionType.StartPoint;});
             SpawnActionButton("EndPoint", () => { _selectActionType = SelectActionType.EndPoint; });
 
@@ -128,8 +129,9 @@ namespace Game.Editor.Systems
             
             var hex = _hexGridSystem.GetHex(result.hit.point);
 
-            var noExist = _currentLevelContext.CurrentLevel.ObstaclesDatas.Any(x => x.Coordinate == hex) is false && 
-                    _currentLevelContext.CurrentLevel.CoinDatas.Any(x => x.Coordinate == hex) is false;
+            var existInCoordinate = _currentLevelContext.CurrentLevel.ObstaclesDatas.Any(x => x.Coordinate == hex) &&
+                          _currentLevelContext.CurrentLevel.CoinDatas.Any(x => x.Coordinate == hex) &&
+                          _currentLevelContext.CurrentLevel.BonusDatas.Any(x => x.Coordinate == hex);
             
             switch (_selectActionType)
             {
@@ -142,7 +144,7 @@ namespace Game.Editor.Systems
                     _currentLevelContext.CurrentLevel.EndCoordinate = _hexGridSystem.GetHex(result.hit.point);
                     break;
                 case SelectActionType.Obstacles:
-                    if (noExist)
+                    if (existInCoordinate is false)
                     {
                         var obstacles = _editorView.LevelTestData.ObstacleAssets;
                         var obstacleAddress = obstacles[Random.Range(0, obstacles.Count)];
@@ -151,11 +153,20 @@ namespace Game.Editor.Systems
                     }
                     break;
                 case SelectActionType.Coins:
-                    if (noExist)
+                    if (existInCoordinate is false)
                     {
                         var coinAddress = _editorView.LevelTestData.CoinAsset;
                         await SpawnItem(hex, coinAddress);
                         _currentLevelContext.CurrentLevel.CoinDatas.Add(new CoinData { AssetAddress = coinAddress, Coordinate = hex });
+                    }
+                    break;
+                
+                case SelectActionType.SpeedBonus:
+                    if (existInCoordinate is false)
+                    {
+                        var speedAddress = _editorView.LevelTestData.SpeedBonusAsset;
+                        await SpawnItem(hex, speedAddress);
+                        _currentLevelContext.CurrentLevel.BonusDatas.Add(new BonusData { AssetAddress = speedAddress, BonusType = BonusType.Speed, Coordinate = hex });
                     }
                     break;
             }
@@ -212,6 +223,13 @@ namespace Game.Editor.Systems
             {
                 var asset = await _downloadBundle.DownloadAsset(coin.AssetAddress);
                 var coinInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(coin.Coordinate), 
+                    Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+            }
+            
+            foreach (var bonus in _currentLevelContext.CurrentLevel.BonusDatas)
+            {
+                var asset = await _downloadBundle.DownloadAsset(bonus.AssetAddress);
+                var bonusInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(bonus.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
             }
         }

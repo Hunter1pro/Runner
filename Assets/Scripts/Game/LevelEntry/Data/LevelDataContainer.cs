@@ -35,7 +35,7 @@ namespace Game.Level.Data
         public Hex Coordinate { get; set; }
     }
     
-    public enum BonusType { Speed, Fly, Etc }
+    public enum BonusType { Speed, Etc }
     
     public class BonusData
     {
