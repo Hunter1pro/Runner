@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Game.Level.Views;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "LevelTestData", menuName = "Level/LevelTestData")]
@@ -22,6 +21,4 @@ public class LevelTestData : ScriptableObject
     
     [field: SerializeField]
     public string SpeedBonusAsset { get; private set; }
-    
-    // SkyBox
 }

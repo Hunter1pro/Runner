@@ -46,7 +46,9 @@ namespace Game.Boot
             
             _levelDataContainer = SaveHelper.Deserialize<LevelDataContainer>(textAsset.text);
             #endif
-
+            
+            Application.targetFrameRate = 60;
+            
             _bonusEntry = GetSystem<BonusEntry>();
             _uiEntry = GetSystem<UIEntry>();
 
@@ -58,6 +60,7 @@ namespace Game.Boot
 
         private async Task GenerateServices(int currentLevel)
         {
+            Debug.Log($"#currentLevel {currentLevel}");
             _score = 0;
             _uiEntry.Dispose();
             _uiEntry.StartGame(_currentLevel);
@@ -113,7 +116,7 @@ namespace Game.Boot
             {
                 _uiEntry.ShowPopup(PopupType.GameWin, () =>
                 {
-                    _ = GenerateServices(_currentLevel++);
+                    _ = GenerateServices(++_currentLevel);
                 });
             }
             else

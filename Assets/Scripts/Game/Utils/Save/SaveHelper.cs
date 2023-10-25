@@ -21,7 +21,7 @@ using UnityEngine;
             }
             else if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
-                string path = Application.streamingAssetsPath;
+                string path = Application.persistentDataPath;
 
                 return path;
             }

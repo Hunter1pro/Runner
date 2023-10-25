@@ -59,7 +59,7 @@ namespace Game.UI
 
         public void ScoreUpdate(int score)
         {
-            _topPanelView.LevelText.text = $"Score {score}";
+            _topPanelView.ScoreText.text = $"Score {score}";
         }
 
         public void Dispose()
