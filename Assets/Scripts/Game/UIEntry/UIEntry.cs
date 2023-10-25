@@ -30,7 +30,7 @@ namespace Game.UI
             switch (popupType)
             {
                 case PopupType.GameStart:
-                    _popupView.HeaderText.text = "Tap To Start";
+                    _popupView.HeaderText.text = "Use Swipe Left & Right";
                     _popupView.ButtonText.text = "Start";
                     _popupView.Button.onClick.AddListener(action);
                     break;
