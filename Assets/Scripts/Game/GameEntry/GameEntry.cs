@@ -39,6 +39,7 @@ namespace Game
             diServiceCollection.RegisterSingleton(hexGridSystem);
             diServiceCollection.RegisterSingleton(characterInstance.GetComponent<CharacterAnim>());
             diServiceCollection.RegisterSingleton(levelProvider.layout);
+            diServiceCollection.RegisterSingleton(_gameEntryView);
 
             var container = diServiceCollection.GenerateContainer();
 

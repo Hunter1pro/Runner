@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Utils;
+using Game.Views;
 using HexLib;
 using Unity.Mathematics;
 using UnityEngine;
@@ -15,20 +16,20 @@ namespace Game.Systems
 
         private int _pathStep;
         public bool IsMove { get; private set; }
-        [Obsolete("ToConfig")]
-        private float _speed = 5;
+        private float _speed;
 
         private float _entrySpeed;
 
         private List<float3> _path = new List<float3>();
         private List<IMoveFinish> _moveFinished = new List<IMoveFinish>();
         private PlayerInput _playerInput;
-
-
-        public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem)
+        
+        public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem, GameEntryView gameEntryView)
         {
             _character = character;
             _hexGridSystem = hexGridSystem;
+
+            _speed = gameEntryView.Speed;
             _entrySpeed = _speed;
 
             _playerInput = new PlayerInput();

@@ -12,6 +12,9 @@ namespace Game.Views
 
         [field: SerializeField] 
         public string CharacterAsset = "unitychan";
+
+        [field: SerializeField] 
+        public float Speed { get; private set; } = 5;
     }
 }
 
