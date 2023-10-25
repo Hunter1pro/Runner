@@ -36,6 +36,7 @@ namespace Game
             diServiceCollection.RegisterSingleton<ILevelProvider, LevelProvider>(levelProvider.levelProvider);
             diServiceCollection.RegisterSingleton<IMapInfo, LevelProvider>(levelProvider.levelProvider);
             diServiceCollection.RegisterSingleton<IMoveComponent, MoveComponent>();
+            diServiceCollection.RegisterSingleton<ISwipeInput, SwipeInput>();
             diServiceCollection.RegisterSingleton(hexGridSystem);
             diServiceCollection.RegisterSingleton(characterInstance.GetComponent<CharacterAnim>());
             diServiceCollection.RegisterSingleton(levelProvider.layout);
@@ -45,6 +46,8 @@ namespace Game
 
             var levelObjectsContainer = container.GetService<ILevelObjectsContainer>();
             var moveComponent = container.GetService<IMoveComponent>();
+            var swipeInput = container.GetService<ISwipeInput>();
+            swipeInput.SwipeAction += SwipeAction;
 
             levelObjectsContainer.AddLevelObject(characterInstance);
 
@@ -58,6 +61,11 @@ namespace Game
             _gameEntryView.VirtualCamera.LookAt = characterInstance.transform;
 
             return container;
+        }
+
+        private void SwipeAction(bool right)
+        {
+            Debug.Log($"Swipe {right}");
         }
     }
 }

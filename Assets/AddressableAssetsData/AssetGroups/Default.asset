@@ -41,6 +41,10 @@ MonoBehaviour:
     m_Address: Bottle_Endurance
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 0bdad17abf6ab4446b698ce7839e2b86
+    m_Address: LevelContainer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4c67e311301884da4b265b4208257e77, type: 2}
   m_SchemaSet:
