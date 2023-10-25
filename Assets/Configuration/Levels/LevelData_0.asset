@@ -15,9 +15,8 @@ MonoBehaviour:
   <Material>k__BackingField: {fileID: 2100000, guid: d2795c9d033504f48be6e405b91e5667, type: 2}
   <Height>k__BackingField: 25
   <Weight>k__BackingField: 3
-  <NextObstacleDistance>k__BackingField: 12
-  <RandomRangeDistance>k__BackingField: 3
   <ObstacleAssets>k__BackingField:
   - Obstacle_1
   - Obstacle_2
   - Obstacle_3
+  <CoinAsset>k__BackingField: Coin

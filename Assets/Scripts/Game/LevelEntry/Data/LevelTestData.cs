@@ -17,5 +17,8 @@ public class LevelTestData : ScriptableObject
     [field: SerializeField] 
     public List<string> ObstacleAssets { get; private set; }
     
+    [field: SerializeField]
+    public string CoinAsset { get; private set; }
+    
     // SkyBox
 }

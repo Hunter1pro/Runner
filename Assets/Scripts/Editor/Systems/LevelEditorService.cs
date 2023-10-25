@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Game.Editor.Systems.Views;
 using Game.Level.Data;
 using Game.Level.Systems;
@@ -22,7 +24,7 @@ namespace Game.Editor.Systems
         }
     }
     
-    public enum SelectActionType { None, SpawnObstacles, StartPoint, EndPoint }
+    public enum SelectActionType { None, Obstacles, Coins, StartPoint, EndPoint }
     
     public class LevelEditorService
     {
@@ -105,7 +107,8 @@ namespace Game.Editor.Systems
             });
 
             SpawnActionButton("None", () => { _selectActionType = SelectActionType.None; });
-            SpawnActionButton("SpawnObstacles", () => { _selectActionType = SelectActionType.SpawnObstacles; });
+            SpawnActionButton("Obstacles", () => { _selectActionType = SelectActionType.Obstacles; });
+            SpawnActionButton("Coins", () => { _selectActionType = SelectActionType.Coins; });
             SpawnActionButton("StartPoint", () => { _selectActionType = SelectActionType.StartPoint;});
             SpawnActionButton("EndPoint", () => { _selectActionType = SelectActionType.EndPoint; });
 
@@ -122,7 +125,12 @@ namespace Game.Editor.Systems
             var result = _levelCast.Touch(_editorView.Panel);
 
             if (result.exist is false) return;
+            
+            var hex = _hexGridSystem.GetHex(result.hit.point);
 
+            var noExist = _currentLevelContext.CurrentLevel.ObstaclesDatas.Any(x => x.Coordinate == hex) is false && 
+                    _currentLevelContext.CurrentLevel.CoinDatas.Any(x => x.Coordinate == hex) is false;
+            
             switch (_selectActionType)
             {
                 case SelectActionType.StartPoint:
@@ -133,19 +141,32 @@ namespace Game.Editor.Systems
                     _editorView.EndPoint.transform.position = _hexGridSystem.GetHexPoint(result.hit.point);
                     _currentLevelContext.CurrentLevel.EndCoordinate = _hexGridSystem.GetHex(result.hit.point);
                     break;
-                case SelectActionType.SpawnObstacles:
-                    if (result.exist)
+                case SelectActionType.Obstacles:
+                    if (noExist)
                     {
-                        var hex = _hexGridSystem.GetHex(result.hit.point);
-                        var hexPosition = _hexGridSystem.GetHexPoint(result.hit.point);
                         var obstacles = _editorView.LevelTestData.ObstacleAssets;
-                        var assetAddress = obstacles[Random.Range(0, obstacles.Count)];
-                        var asset = await _downloadBundle.DownloadAsset(assetAddress);
-                        var obstacle = GameObject.Instantiate(asset, hexPosition, Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
-                        _currentLevelContext.CurrentLevel.ObstaclesDatas.Add(new ObstaclesData { AssetAddress = assetAddress, Coordinate = hex});
+                        var obstacleAddress = obstacles[Random.Range(0, obstacles.Count)];
+                        await SpawnItem(hex, obstacleAddress);
+                        _currentLevelContext.CurrentLevel.ObstaclesDatas.Add(new ObstaclesData { AssetAddress = obstacleAddress, Coordinate = hex});
+                    }
+                    break;
+                case SelectActionType.Coins:
+                    if (noExist)
+                    {
+                        var coinAddress = _editorView.LevelTestData.CoinAsset;
+                        await SpawnItem(hex, coinAddress);
+                        _currentLevelContext.CurrentLevel.CoinDatas.Add(new CoinData { AssetAddress = coinAddress, Coordinate = hex });
                     }
                     break;
             }
+        }
+
+        private async Task SpawnItem(Hex hex, string assetAddress)
+        {
+            var hexPosition = _hexGridSystem.HexToPosition(hex);
+            
+            var asset = await _downloadBundle.DownloadAsset(assetAddress);
+            var instance = GameObject.Instantiate(asset, hexPosition, Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
         }
 
         private void SpawnLevelButton(string name, Action open, Action<ButtonView> remove)
