@@ -18,14 +18,19 @@ namespace Game.Systems
         [Obsolete("ToConfig")]
         private float _speed = 5;
 
+        private float _entrySpeed;
+
         private List<float3> _path = new List<float3>();
         private List<IMoveFinish> _moveFinished = new List<IMoveFinish>();
         private PlayerInput _playerInput;
+
+        private Vector2 _moveVector;
 
         public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem)
         {
             _character = character;
             _hexGridSystem = hexGridSystem;
+            _entrySpeed = _speed;
 
             _playerInput = new PlayerInput();
             _playerInput.Enable();
@@ -36,8 +41,6 @@ namespace Game.Systems
         private void MoveInput(InputAction.CallbackContext value)
         {
             var moveVector = value.ReadValue<Vector2>();
-
-            if (IsMove is false) return;
 
             if (moveVector.x > 0)
             {
@@ -80,6 +83,16 @@ namespace Game.Systems
                 Debug.LogError("Path is null");
             }
 
+        }
+
+        public void UpdateSpeed(float value)
+        {
+            _speed = value;
+        }
+
+        public void RestoreSpeed()
+        {
+            _speed = _entrySpeed;
         }
 
         public void SubscribeFinish(IMoveFinish moveFinished)
@@ -135,6 +148,9 @@ namespace Game.Systems
         bool IsMove { get; }
         void SubscribeFinish(IMoveFinish moveFinished);
         void Move(List<float3> path);
+
+        void UpdateSpeed(float value);
+        void RestoreSpeed();
     }
 
     public interface IMoveFinish
