@@ -83,8 +83,8 @@ namespace Game.Editor.Systems
                 
                 var currentLevelContext = new CurrentLevelContext();
                 currentLevelContext.CurrentMapObject = new GameObject("HexMap");
-                var testMap = _mapCreator.SpawnMap(currentLevelContext.CurrentMapObject, 0, _editorView.LevelTestData.Weight, 0,
-                    _editorView.LevelTestData.Height, _editorView.LevelTestData.Material);
+                var testMap = _mapCreator.SpawnMap(currentLevelContext.CurrentMapObject, 0, _editorView.LevelTestData.Height, 0,
+                    _editorView.LevelTestData.Weight, _editorView.LevelTestData.Material);
                 
                 currentLevelContext.CurrentLevel = new LevelData { HexMap = testMap };
                 _levelDataContainer.LevelDatas.Add(currentLevelContext.CurrentLevel);

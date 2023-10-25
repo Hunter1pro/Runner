@@ -11,7 +11,7 @@ namespace Game.Views
         public CinemachineVirtualCamera VirtualCamera;
 
         [field: SerializeField] 
-        private string CharacterAsset = "unitychan";
+        public string CharacterAsset = "unitychan";
     }
 }
 

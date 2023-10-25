@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using DIContainerLib;
 using Game.Boot;
@@ -14,29 +15,22 @@ namespace Game
     public class LevelEntry : BaseSystem
     {
         protected override int _initOrder { get; } = -1;
-
-        private RootEntry _rootEntry;
         
         [SerializeField] 
         private LevelCastView _levelCastView;
 
-        private DIContainer diDiContainer;
+        private DIContainer _diContainer;
     
         public override Task Init()
         {
-            _rootEntry = GetSystem<RootEntry>();
-            diDiContainer = GenerateLevelServices();
-            
             return Task.CompletedTask;
         }
 
-        private DIContainer GenerateLevelServices()
+        public (DIContainer diContainer, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem) GenerateLevelServices((LevelProvider levelProvider, Layout layout, Material material) levelContainer, Action obstacleTrigger)
         {
-            if (diDiContainer != null)
-                diDiContainer.Dispose();
+            if (_diContainer != null)
+                _diContainer.Dispose();
 
-            var levelContainer = _rootEntry.ResolveLevelProvider();
-            
             DIServiceCollection diServiceCollection = new DIServiceCollection();
             
             diServiceCollection.RegisterSingleton<IMapCreator, MapCreator>();
@@ -61,23 +55,11 @@ namespace Game
             // Save/Load Level
             // LevelEditor is Simpler than trying to calc level by random weights
             // with obstacle and bonus weights
-            gameLevelSystem.SpawnLevel(levelContainer.material);
+            gameLevelSystem.SpawnLevel(levelContainer.material, obstacleTrigger);
 
-            return container;
-        }
+            _diContainer = container;
 
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                var touch = diDiContainer.GetService<ILevelCast>().Touch();
-                if (touch.exist)
-                {
-                    var hex = diDiContainer.GetService<HexGridSystem>().GetHex(touch.hit.point);
-                    
-                    Debug.Log($"Q {hex.Q}, R {hex.R} S {hex.S}");
-                }
-            }
+            return (container, container.GetService<IDownloadBundle>(), container.GetService<HexGridSystem>());
         }
     }
 }

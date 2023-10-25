@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Level.Views;
 using Game.Utils;
 using HexLib;
 using Unity.Mathematics;
@@ -20,6 +22,7 @@ namespace Game.Level.Systems
         private ICustomLogger _logger;
         
         private Dictionary<string, Hex> _currentMap = new ();
+        private string PLAYER_TAG = "Player";
         
         // List possible levels
         // SaveSystem
@@ -40,7 +43,7 @@ namespace Game.Level.Systems
             _logger = logger;
         }
 
-        public async Task SpawnLevel(Material material)
+        public async Task SpawnLevel(Material material, Action obstacleTrigger)
         {
             // When we have load level system create map object here
             var mapGameObject = _mapCreator.SpawnMap(_levelProvider.HexMap, material);
@@ -52,6 +55,11 @@ namespace Game.Level.Systems
                 var obstacleInstance = GameObject.Instantiate(obstacleAsset,
                     _hexGridSystem.HexToPosition(obstacle.Coordinate), Quaternion.identity);
                 
+                obstacleInstance.GetComponent<TriggerSubscribe>().Subscribe(PLAYER_TAG, collideObject =>
+                {
+                    obstacleTrigger?.Invoke();
+                });
+                
                 _levelObjectsContainer.AddLevelObject(obstacleInstance);
             }
         }
@@ -59,7 +67,7 @@ namespace Game.Level.Systems
 
     public interface IGameLevelSystem
     {
-        Task SpawnLevel(Material material);
+        Task SpawnLevel(Material material, Action obstacleTrigger);
     }
 }
 
