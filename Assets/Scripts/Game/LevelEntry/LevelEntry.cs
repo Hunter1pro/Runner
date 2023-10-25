@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using DIContainerLib;
 using Game.Boot;
+using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Utils;
 using Game.Views;
@@ -28,7 +29,7 @@ namespace Game
 
         public (DIContainer diContainer, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem) GenerateLevelServices(
             (LevelProvider levelProvider, Layout layout, Material material) levelContainer, 
-            Action obstacleTrigger, Action<GameObject> coinTrigger)
+            Action obstacleTrigger, Action<GameObject> coinTrigger, Action<GameObject, BonusType> bonusTrigger)
         {
             if (_diContainer != null)
                 _diContainer.Dispose();
@@ -54,7 +55,7 @@ namespace Game
 
             var gameLevelSystem = container.GetService<IGameLevelSystem>();
             
-            gameLevelSystem.SpawnLevel(levelContainer.material, obstacleTrigger, coinTrigger);
+            gameLevelSystem.SpawnLevel(levelContainer.material, obstacleTrigger, coinTrigger, bonusTrigger);
 
             _diContainer = container;
 

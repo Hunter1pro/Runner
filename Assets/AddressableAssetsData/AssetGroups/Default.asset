@@ -37,6 +37,10 @@ MonoBehaviour:
     m_Address: Coin
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 11e31a2ebb4e6e246bcf8c0ba034a031
+    m_Address: Bottle_Endurance
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4c67e311301884da4b265b4208257e77, type: 2}
   m_SchemaSet:

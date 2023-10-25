@@ -9691,6 +9691,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4000013828724138}
+  - component: {fileID: -1382639606297404520}
+  - component: {fileID: 8931957276453219371}
   m_Layer: 0
   m_Name: Bottle_Endurance
   m_TagString: Untagged
@@ -9715,6 +9717,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1382639606297404520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013846074356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7faea72bb4f4d48b199b5c51457c73e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!135 &8931957276453219371
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013846074356}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.31
+  m_Center: {x: 0, y: 0.63, z: 0}
 --- !u!1 &1000014110595150
 GameObject:
   m_ObjectHideFlags: 0

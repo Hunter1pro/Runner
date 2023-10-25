@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DIContainerLib;
+using Game.Bonus;
 using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Level.Views;
@@ -20,24 +21,35 @@ namespace Game.Boot
         [SerializeField] 
         private GameLevelView _gameLevelView;
 
+        private BonusEntry _bonusEntry;
+
         private LevelContainerFile _levelContainerFile = new LevelContainerFile();
         private LevelDataContainer _levelDataContainer;
 
         private DIContainer _levelContainer;
         private DIContainer _gameContainer;
-
+        
         private int _currentLevel = 0;
         
         public override async Task Init()
         {
             _levelDataContainer = SaveSystem<LevelDataContainer>.Load(_levelContainerFile);
 
-            var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
+            _bonusEntry = GetSystem<BonusEntry>();
 
-            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger);
+            await GenerateServices(_currentLevel);
+        }
+
+        private async Task GenerateServices(int currentLevel)
+        {
+            var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, currentLevel);
+
+            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger, _bonusEntry.BonusTrigger);
             _levelContainer = levelContainer.diContainer;
             
             _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
+            
+            _bonusEntry.ResolveBonusServises(_gameContainer.GetService<IMoveComponent>());
         }
 
         private (LevelProvider levelProvider, Layout layout, Material material) ResolveLevelProvider(LevelDataContainer levelDataContainer, int level)
@@ -61,13 +73,8 @@ namespace Game.Boot
             
             _levelContainer.Dispose();
             _gameContainer.Dispose();
-            
-            var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
 
-            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger);
-            _levelContainer = levelContainer.diContainer;
-            
-            _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
+            await GenerateServices(_currentLevel);
         }
         
         private void CoinTrigger(GameObject coin)
@@ -86,13 +93,8 @@ namespace Game.Boot
             {
                 // Show UI Menu and Score
                 // Move Camera to Character with WinAnimation
-                
-                var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel++);
 
-                var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger);
-                _levelContainer = levelContainer.diContainer;
-            
-                _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
+                GenerateServices(_currentLevel++);
             }
             else
             {

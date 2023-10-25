@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Level.Data;
 using Game.Level.Views;
 using Game.Utils;
 using HexLib;
@@ -43,7 +44,7 @@ namespace Game.Level.Systems
             _logger = logger;
         }
 
-        public async Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger)
+        public async Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger, Action<GameObject, BonusType> bonusTrigger)
         {
             // When we have load level system create map object here
             var mapGameObject = _mapCreator.SpawnMap(_levelProvider.HexMap, material);
@@ -76,12 +77,26 @@ namespace Game.Level.Systems
                 
                 _levelObjectsContainer.AddLevelObject(coinInstance);
             }
+            
+            foreach (var bonus in _levelProvider.LevelData.BonusDatas)
+            {
+                var bonusAsset = await _downloadBundle.DownloadAsset(bonus.AssetAddress);
+                var bonusInstance = GameObject.Instantiate(bonusAsset, _hexGridSystem.HexToPosition(bonus.Coordinate),
+                    Quaternion.identity);
+                
+                bonusInstance.GetComponent<TriggerSubscribe>().Subscribe(PLAYER_TAG, collideObject =>
+                {
+                    bonusTrigger?.Invoke(bonusInstance, bonus.BonusType);
+                });
+                
+                _levelObjectsContainer.AddLevelObject(bonusInstance);
+            }
         }
     }
 
     public interface IGameLevelSystem
     {
-        Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger);
+        Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger, Action<GameObject, BonusType> bonusTrigger);
     }
 }
 
