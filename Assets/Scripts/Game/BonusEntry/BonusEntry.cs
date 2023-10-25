@@ -11,7 +11,7 @@ namespace Game.Bonus
 {
     public class BonusEntry : BaseSystem
     {
-        protected override int _initOrder { get; }
+        protected override int _initOrder { get; } = -1;
         
         [SerializeField]
         private BonusEntryView _bonusEntryView;
