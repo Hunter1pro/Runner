@@ -7,6 +7,7 @@ using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Level.Views;
 using Game.Systems;
+using Game.UI;
 using GameObjectService;
 using HexLib;
 using Unity.Mathematics;
@@ -22,6 +23,7 @@ namespace Game.Boot
         private GameLevelView _gameLevelView;
 
         private BonusEntry _bonusEntry;
+        private UIEntry _uiEntry;
 
         private LevelContainerFile _levelContainerFile = new LevelContainerFile();
         private LevelDataContainer _levelDataContainer;
@@ -29,19 +31,25 @@ namespace Game.Boot
         private DIContainer _levelContainer;
         private DIContainer _gameContainer;
         
-        private int _currentLevel = 0;
+        private int _currentLevel;
+        private int _score;
         
         public override async Task Init()
         {
             _levelDataContainer = SaveSystem<LevelDataContainer>.Load(_levelContainerFile);
 
             _bonusEntry = GetSystem<BonusEntry>();
+            _uiEntry = GetSystem<UIEntry>();
 
             await GenerateServices(_currentLevel);
         }
 
         private async Task GenerateServices(int currentLevel)
         {
+            _score = 0;
+            _uiEntry.Dispose();
+            _uiEntry.StartGame(_currentLevel);
+            
             var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, currentLevel);
 
             var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger, _bonusEntry.BonusTrigger);
@@ -66,40 +74,44 @@ namespace Game.Boot
             return (levelProvider, layout, _gameLevelView.LevelData.Material);
         }
 
-        public async void ObstacleTrigger()
+        private void ObstacleTrigger()
         {
-            // Show UI Menu
-            // Restart CurrentLevel
-            
             _levelContainer.Dispose();
             _gameContainer.Dispose();
-
-            await GenerateServices(_currentLevel);
+            
+            _uiEntry.ShowPopup(PopupType.GameLost, () =>
+            {
+                _ = GenerateServices(_currentLevel);
+            });
         }
         
         private void CoinTrigger(GameObject coin)
         {
-            // Show Score and Add it
             GameObject.Destroy(coin);
-            Debug.Log($"CoinCatched");
+
+            _score += _gameLevelView.CoinScore;
+            _uiEntry.ScoreUpdate(_score);
         }
 
-        public async void MoveFinished(float3 position)
+        public void MoveFinished(float3 position)
         {
             _levelContainer.Dispose();
             _gameContainer.Dispose();
             
             if (_currentLevel < _levelDataContainer.LevelDatas.Count - 1)
             {
-                // Show UI Menu and Score
-                // Move Camera to Character with WinAnimation
-
-                GenerateServices(_currentLevel++);
+                _uiEntry.ShowPopup(PopupType.GameWin, () =>
+                {
+                    _ = GenerateServices(_currentLevel++);
+                });
             }
             else
             {
-                // Show UI Score, Game End and Restart
-                Debug.Log("GameFinished");
+                _uiEntry.ShowPopup(PopupType.GameEnd, () =>
+                {
+                    _currentLevel = 0; 
+                    _ = GenerateServices(_currentLevel);
+                });
             }
         }
     }
