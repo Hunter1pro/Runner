@@ -207,6 +207,13 @@ namespace Game.Editor.Systems
                 var obstacleInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(obstacle.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
             }
+            
+            foreach (var coin in _currentLevelContext.CurrentLevel.CoinDatas)
+            {
+                var asset = await _downloadBundle.DownloadAsset(coin.AssetAddress);
+                var coinInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(coin.Coordinate), 
+                    Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+            }
         }
         
         private void RemoveLevel(LevelData currentLevel, ButtonView buttonView)
