@@ -12,12 +12,15 @@ using GameObjectService;
 using HexLib;
 using Unity.Mathematics;
 using UnityEngine;
+#if !UNITY_EDITOR
+using UnityEngine.AddressableAssets;
+#endif
 
 namespace Game.Boot
 {
     public class RootEntry : BaseSystem, IMoveFinish
     {
-        protected override int _initOrder { get; } = -2;
+        protected override int _initOrder { get; }
         
         [SerializeField] 
         private GameLevelView _gameLevelView;
@@ -36,12 +39,21 @@ namespace Game.Boot
         
         public override async Task Init()
         {
+            #if UNITY_EDITOR
             _levelDataContainer = SaveSystem<LevelDataContainer>.Load(_levelContainerFile);
+            #else
+             var textAsset = await Addressables.LoadAssetAsync<TextAsset>(_levelContainerFile.AssetFile).Task;
+            
+            _levelDataContainer = SaveHelper.Deserialize<LevelDataContainer>(textAsset.text);
+            #endif
 
             _bonusEntry = GetSystem<BonusEntry>();
             _uiEntry = GetSystem<UIEntry>();
 
-            await GenerateServices(_currentLevel);
+            _uiEntry.ShowPopup(PopupType.GameStart, () =>
+            {
+                _ = GenerateServices(_currentLevel);
+            });
         }
 
         private async Task GenerateServices(int currentLevel)
@@ -51,19 +63,18 @@ namespace Game.Boot
             _uiEntry.StartGame(_currentLevel);
             
             var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, currentLevel);
-
             var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger, CoinTrigger, _bonusEntry.BonusTrigger);
             _levelContainer = levelContainer.diContainer;
-            
+        
             _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
-            
             _bonusEntry.ResolveBonusServises(_gameContainer.GetService<IMoveComponent>());
+   
         }
 
         private (LevelProvider levelProvider, Layout layout, Material material) ResolveLevelProvider(LevelDataContainer levelDataContainer, int level)
         {
             if (levelDataContainer == null && levelDataContainer.LevelDatas.Count > 0)
-                throw new Exception("LevelDataContainer File Not Loaded");
+                throw new Exception("LevelDataContainer File Not Loaded or Empty");
             
             var layout = new Layout(Layout.Flat, levelDataContainer.Size, new float3(levelDataContainer.Size, 0, levelDataContainer.Size * Mathf.Sqrt(3) / 2));
 

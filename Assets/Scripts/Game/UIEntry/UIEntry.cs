@@ -6,10 +6,10 @@ using UnityEngine.Events;
 
 namespace Game.UI
 {
-    public enum PopupType { GameWin, GameLost, GameEnd }
+    public enum PopupType { GameStart, GameWin, GameLost, GameEnd }
     public class UIEntry : BaseSystem, IDisposable
     {
-        protected override int _initOrder { get; }
+        protected override int _initOrder { get; } = -1;
 
         [SerializeField] 
         private TopPanelView _topPanelView;
@@ -29,6 +29,11 @@ namespace Game.UI
             
             switch (popupType)
             {
+                case PopupType.GameStart:
+                    _popupView.HeaderText.text = "Use Swipe Left & Right";
+                    _popupView.ButtonText.text = "Start";
+                    _popupView.Button.onClick.AddListener(action);
+                    break;
                 case PopupType.GameWin:
                     _popupView.HeaderText.text = "Game Win";
                     _popupView.ButtonText.text = "Next Level";
@@ -46,7 +51,7 @@ namespace Game.UI
                     break;
             }
         }
-
+        
         public void StartGame(int level)
         {
             _topPanelView.LevelText.text = $"Level {level+1}";
@@ -60,7 +65,7 @@ namespace Game.UI
         public void Dispose()
         {
             _topPanelView.LevelText.text = $"Level";
-            _topPanelView.ScoreText.text = $"0";
+            _topPanelView.ScoreText.text = $"Score: 0";
             
             _popupView.Panel.SetActive(false);
             _popupView.Button.onClick.RemoveAllListeners();
