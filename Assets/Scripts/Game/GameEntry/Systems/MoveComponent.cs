@@ -19,36 +19,31 @@ namespace Game.Systems
         private float _speed;
 
         private float _entrySpeed;
-
+        
         private List<float3> _path = new List<float3>();
         private List<IMoveFinish> _moveFinished = new List<IMoveFinish>();
-        private PlayerInput _playerInput;
         
-        public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem, GameEntryView gameEntryView)
+        public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem, GameEntryView gameEntryView, ISwipeInput swipeInput)
         {
             _character = character;
             _hexGridSystem = hexGridSystem;
 
             _speed = gameEntryView.Speed;
             _entrySpeed = _speed;
-
-            _playerInput = new PlayerInput();
-            _playerInput.Enable();
-
-            _playerInput.Player.Move.performed += MoveInput;
-        }
-
-        private void MoveInput(InputAction.CallbackContext value)
-        {
-            var moveVector = value.ReadValue<Vector2>();
-            ChangeDirrection(moveVector);
-        }
-
-        private void ChangeDirrection(Vector2 moveVector)
-        {
-            if (IsMove is false && _pathStep < _path.Count) return;
             
-            if (moveVector.x > 0)
+            swipeInput.SwipeAction += SwipeInput;
+        }
+
+        private void SwipeInput(bool right)
+        {
+            ChangeDirrection(right);
+        }
+
+        private void ChangeDirrection(bool right)
+        {
+            if (IsMove is false || _path.Count == 0) return;
+            
+            if (right)
             {
                 var currentHex = _hexGridSystem.GetHex(_path[_pathStep]);
                 var nextHex = currentHex.Neighbour(2);
@@ -61,7 +56,7 @@ namespace Game.Systems
                     _pathStep = 0;
                 }
             }
-            else if (moveVector.x < 0)
+            else
             {
                 var currentHex = _hexGridSystem.GetHex(_path[_pathStep]);
                 var nextHex = currentHex.Neighbour(5);
@@ -139,17 +134,21 @@ namespace Game.Systems
 
                 _path.Clear();
             }
-        }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-            _playerInput.Disable();
-            _playerInput.Dispose();
+            if (IsMove && _path.Count == 0)
+            {
+                IsMove = false;
+                _pathStep = 0;
+                var finalPoint = _hexGridSystem.GetHexPoint(_character.transform.position);
+                
+                _moveFinished.ForEach(x => x.MoveFinished(finalPoint));
+
+                _path.Clear();
+            }
         }
     }
     
-    public interface IMoveComponent : IDisposable
+    public interface IMoveComponent
     {
         bool IsMove { get; }
         void SubscribeFinish(IMoveFinish moveFinished);
