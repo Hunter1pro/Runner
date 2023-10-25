@@ -32,10 +32,12 @@ namespace Game.Boot
         {
             _levelDataContainer = SaveSystem<LevelDataContainer>.Load(_levelContainerFile);
 
-            var levelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
+            var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
 
-            _levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(levelContainer);
-            _gameContainer = await GetSystem<GameEntry>().GenerateGameServices((levelContainer), this);
+            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger);
+            _levelContainer = levelContainer.diContainer;
+            
+            _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
         }
 
         private (LevelProvider levelProvider, Layout layout, Material material) ResolveLevelProvider(LevelDataContainer levelDataContainer, int level)
@@ -52,20 +54,42 @@ namespace Game.Boot
             return (levelProvider, layout, _gameLevelView.LevelData.Material);
         }
 
+        public async void ObstacleTrigger()
+        {
+            // Show UI Menu
+            // Restart CurrentLevel
+            
+            _levelContainer.Dispose();
+            _gameContainer.Dispose();
+            
+            var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel);
+
+            var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger);
+            _levelContainer = levelContainer.diContainer;
+            
+            _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
+        }
+
         public async void MoveFinished(float3 position)
         {
             _levelContainer.Dispose();
             _gameContainer.Dispose();
-
+            
             if (_currentLevel < _levelDataContainer.LevelDatas.Count - 1)
             {
-                var levelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel++);
+                // Show UI Menu and Score
+                // Move Camera to Character with WinAnimation
+                
+                var rootLevelContainer = ResolveLevelProvider(_levelDataContainer, _currentLevel++);
 
-                _levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(levelContainer);
-                _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(levelContainer, this);
+                var levelContainer = GetSystem<LevelEntry>().GenerateLevelServices(rootLevelContainer, ObstacleTrigger);
+                _levelContainer = levelContainer.diContainer;
+            
+                _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
             }
             else
             {
+                // Show UI Score, Game End and Restart
                 Debug.Log("GameFinished");
             }
         }

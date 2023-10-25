@@ -34,7 +34,7 @@ namespace HexLib
                 }
                 catch
                 {
-                    Debug.Log($"Out Of map");
+                    // Debug.Log($"Out Of map");
                 }
             }
 

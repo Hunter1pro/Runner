@@ -15,21 +15,22 @@ namespace Game.Systems
 
         private int _pathStep;
         public bool IsMove { get; private set; }
-        private float _speed;
+        [Obsolete("ToConfig")]
+        private float _speed = 5;
 
         private List<float3> _path = new List<float3>();
         private List<IMoveFinish> _moveFinished = new List<IMoveFinish>();
+        private PlayerInput _playerInput;
 
-        public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem, float speed = 5)
+        public MoveComponent(CharacterAnim character, HexGridSystem hexGridSystem)
         {
             _character = character;
             _hexGridSystem = hexGridSystem;
-            _speed = speed;
 
-            PlayerInput input = new PlayerInput();
-            input.Enable();
+            _playerInput = new PlayerInput();
+            _playerInput.Enable();
 
-            input.Player.Move.performed += MoveInput;
+            _playerInput.Player.Move.performed += MoveInput;
         }
 
         private void MoveInput(InputAction.CallbackContext value)
@@ -88,6 +89,8 @@ namespace Game.Systems
 
         public override void Update()
         {
+            if (_character == null) return;
+            
             if (IsMove && _pathStep < _path.Count)
             {
                 _character.PlayRun();
@@ -117,6 +120,13 @@ namespace Game.Systems
 
                 _path.Clear();
             }
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _playerInput.Disable();
+            _playerInput.Dispose();
         }
     }
     
