@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Game.Level.Data;
 using Game.Level.Views;
 using Game.Utils;
 using HexLib;
-using Unity.Mathematics;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Game.Level.Systems
 {
@@ -25,13 +22,6 @@ namespace Game.Level.Systems
         private Dictionary<string, Hex> _currentMap = new ();
         private string PLAYER_TAG = "Player";
         
-        // List possible levels
-        // SaveSystem
-        // Spawn Level
-        // Finish Level Trigger
-        // Level Props with Trigger kill/damage
-        // Level Bonus Touch
-
         public GameLevelSystem(IMapCreator mapCreator, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem, ILevelProvider levelProvider, ISpawnSystem spawnSystem, 
             ILevelObjectsContainer levelObjectsContainer, ICustomLogger logger)
         {
