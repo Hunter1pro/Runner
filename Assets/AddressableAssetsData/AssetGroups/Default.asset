@@ -45,6 +45,54 @@ MonoBehaviour:
     m_Address: LevelContainer
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: f923a662a05464566aa981db752ad1f9
+    m_Address: SkyBox_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b5f2c298371654ad7b5cbaedb1eaf2c4
+    m_Address: SkyBox_2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fc7beeae39cc441b5859632af13276ce
+    m_Address: SkyBox_3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2a64bee3f1bb6490b88c5b1b9290117f
+    m_Address: SkyBox_4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1070ff336fb744496aa8303240ae33a3
+    m_Address: SkyBox_5
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e0a59fb4c5f4b4080a6b2d4bab716a4d
+    m_Address: SkyBox_6
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0008d581bf6e14c75855e38caa8643a7
+    m_Address: SkyBox_7
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3da26ff2352794eb1bdd737c8b7ad01b
+    m_Address: SkyBox_8
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1e3dfcb72294846b8a1bd2480fdb9bb6
+    m_Address: SkyBox_9
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ea64af0e1c5124c6faacc62863e679b3
+    m_Address: SkyBox_10
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 97a5cc8f1fc5b41afaa4911e1d3ec48b
+    m_Address: SkyBox_11
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a4c9b0c32d24f4bb4a4ea0c4a3732a9c
+    m_Address: SkyBox_12
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4c67e311301884da4b265b4208257e77, type: 2}
   m_SchemaSet:
