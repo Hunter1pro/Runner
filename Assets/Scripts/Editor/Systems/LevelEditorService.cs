@@ -10,7 +10,6 @@ using HexLib;
 using Powerof.Components;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
@@ -125,7 +124,7 @@ namespace Game.Editor.Systems
 
             var tmpDropdown = TMP_Dropdown.Instantiate(_editorView.DropdownPrefab, _editorView.ActionsPanelRoot);
             _genericDropdown = new GenericDropDown<string>(tmpDropdown);
-            _genericDropdown.Init(editorView.LevelTestData.SkyBoxes.Select(x => (x.editorAsset.name, x.editorAsset.name)).ToList(), async result =>
+            _genericDropdown.Init(editorView.LevelTestData.SkyBoxes.Select(x => (x, x)).ToList(), async result =>
             {
                 if (_currentLevelContext != null)
                 {
@@ -165,16 +164,16 @@ namespace Game.Editor.Systems
                     {
                         var obstacles = _editorView.LevelTestData.ObstacleAssets;
                         var obstacleAddress = obstacles[Random.Range(0, obstacles.Count)];
-                        await SpawnItem(hex, obstacleAddress.RuntimeKey.ToString());
-                        _currentLevelContext.CurrentLevel.ObstaclesDatas.Add(new ObstaclesData { AssetAddress = obstacleAddress.editorAsset.name, Coordinate = hex});
+                        await SpawnItem(hex, obstacleAddress);
+                        _currentLevelContext.CurrentLevel.ObstaclesDatas.Add(new ObstaclesData { AssetAddress = obstacleAddress, Coordinate = hex});
                     }
                     break;
                 case SelectActionType.Coins:
                     if (existInCoordinate is false)
                     {
                         var coinAddress = _editorView.LevelTestData.CoinAsset;
-                        await SpawnItem(hex, coinAddress.RuntimeKey.ToString());
-                        _currentLevelContext.CurrentLevel.CoinDatas.Add(new CoinData { AssetAddress = coinAddress.editorAsset.name, Coordinate = hex });
+                        await SpawnItem(hex, coinAddress);
+                        _currentLevelContext.CurrentLevel.CoinDatas.Add(new CoinData { AssetAddress = coinAddress, Coordinate = hex });
                     }
                     break;
                 
@@ -182,8 +181,8 @@ namespace Game.Editor.Systems
                     if (existInCoordinate is false)
                     {
                         var speedAddress = _editorView.LevelTestData.SpeedBonusAsset;
-                        await SpawnItem(hex, speedAddress.RuntimeKey.ToString());
-                        _currentLevelContext.CurrentLevel.BonusDatas.Add(new BonusData { AssetAddress = speedAddress.editorAsset.name, BonusType = BonusType.Speed, Coordinate = hex });
+                        await SpawnItem(hex, speedAddress);
+                        _currentLevelContext.CurrentLevel.BonusDatas.Add(new BonusData { AssetAddress = speedAddress, BonusType = BonusType.Speed, Coordinate = hex });
                     }
                     break;
             }

@@ -16,74 +16,21 @@ MonoBehaviour:
   <Height>k__BackingField: 25
   <Weight>k__BackingField: 3
   <ObstacleAssets>k__BackingField:
-  - m_AssetGUID: f737ac90c70a04705994dceda150785b
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 4c89805a5f8974ab98c13d9c9e27019a
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 06688985144084be5b991ed42c7c155d
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  <CoinAsset>k__BackingField:
-    m_AssetGUID: 5142a683d65bbf84abea6f07db9099c7
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  <SpeedBonusAsset>k__BackingField:
-    m_AssetGUID: 11e31a2ebb4e6e246bcf8c0ba034a031
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - Obstacle_1
+  - Obstacle_2
+  - Obstacle_3
+  <CoinAsset>k__BackingField: Coin
+  <SpeedBonusAsset>k__BackingField: Bottle_Endurance
   <SkyBoxes>k__BackingField:
-  - m_AssetGUID: f923a662a05464566aa981db752ad1f9
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: b5f2c298371654ad7b5cbaedb1eaf2c4
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: fc7beeae39cc441b5859632af13276ce
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 2a64bee3f1bb6490b88c5b1b9290117f
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 1070ff336fb744496aa8303240ae33a3
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: e0a59fb4c5f4b4080a6b2d4bab716a4d
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 0008d581bf6e14c75855e38caa8643a7
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 3da26ff2352794eb1bdd737c8b7ad01b
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 1e3dfcb72294846b8a1bd2480fdb9bb6
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: ea64af0e1c5124c6faacc62863e679b3
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: 97a5cc8f1fc5b41afaa4911e1d3ec48b
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  - m_AssetGUID: a4c9b0c32d24f4bb4a4ea0c4a3732a9c
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - SkyBox_1
+  - SkyBox_2
+  - SkyBox_3
+  - SkyBox_4
+  - SkyBox_5
+  - SkyBox_6
+  - SkyBox_7
+  - SkyBox_8
+  - SkyBox_9
+  - SkyBox_10
+  - SkyBox_11
+  - SkyBox_12

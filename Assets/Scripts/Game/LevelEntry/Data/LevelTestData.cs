@@ -15,14 +15,14 @@ public class LevelTestData : ScriptableObject
     public int Weight { get; private set; } = 3;
     
     [field: SerializeField] 
-    public List<AssetReference> ObstacleAssets { get; private set; }
+    public List<string> ObstacleAssets { get; private set; }
     
     [field: SerializeField]
-    public AssetReference CoinAsset { get; private set; }
+    public string CoinAsset { get; private set; }
     
     [field: SerializeField]
-    public AssetReference SpeedBonusAsset { get; private set; }
+    public string SpeedBonusAsset { get; private set; }
     
     [field: SerializeField, AssetReferenceUILabelRestriction]
-    public List<AssetReference> SkyBoxes { get; private set; }
+    public List<string> SkyBoxes { get; private set; }
 }
