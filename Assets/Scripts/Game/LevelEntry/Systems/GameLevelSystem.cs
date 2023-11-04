@@ -39,6 +39,8 @@ namespace Game.Level.Systems
             // When we have load level system create map object here
             var mapGameObject = _mapCreator.SpawnMap(_levelProvider.HexMap, material);
             _levelObjectsContainer.AddLevelObject(mapGameObject);
+            
+            RenderSettings.skybox = await _downloadBundle.DownloadAsset<Material>(_levelProvider.LevelData.SkyBox);             
 
             foreach (var obstacle in _levelProvider.LevelData.ObstaclesDatas)
             {

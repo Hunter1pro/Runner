@@ -13,6 +13,7 @@ namespace Game.Level.Data
 
     public class LevelData
     {
+        public string SkyBox { get; set; }
         public Hex StartCoordinate { get; set; }
         public Hex EndCoordinate { get; set; }
 

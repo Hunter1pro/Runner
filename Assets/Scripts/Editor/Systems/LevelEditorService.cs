@@ -7,6 +7,8 @@ using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Utils;
 using HexLib;
+using Powerof.Components;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -37,6 +39,8 @@ namespace Game.Editor.Systems
         private LevelContainerFile _levelContainerFile;
         private LevelDataContainer _levelDataContainer;
         private Layout _layout;
+
+        private GenericDropDown<string> _genericDropdown;
 
         private SelectActionType _selectActionType;
 
@@ -117,6 +121,18 @@ namespace Game.Editor.Systems
             {
                 SaveSystem<LevelDataContainer>.Save(_levelContainerFile, _levelDataContainer);
             });
+
+            var tmpDropdown = TMP_Dropdown.Instantiate(_editorView.DropdownPrefab, _editorView.ActionsPanelRoot);
+            _genericDropdown = new GenericDropDown<string>(tmpDropdown);
+            _genericDropdown.Init(editorView.LevelTestData.SkyBoxes.Select(x => (x, x)).ToList(), async result =>
+            {
+                if (_currentLevelContext != null)
+                {
+                    RenderSettings.skybox = await _downloadBundle.DownloadAsset<Material>(result);
+                    _currentLevelContext.CurrentLevel.SkyBox = result;
+                }
+                
+            });
         }
 
         private async void OnClick(InputAction.CallbackContext value)
@@ -175,7 +191,6 @@ namespace Game.Editor.Systems
         private async Task SpawnItem(Hex hex, string assetAddress)
         {
             var hexPosition = _hexGridSystem.HexToPosition(hex);
-            
             var asset = await _downloadBundle.DownloadAsset(assetAddress);
             var instance = GameObject.Instantiate(asset, hexPosition, Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
         }
@@ -232,6 +247,8 @@ namespace Game.Editor.Systems
                 var bonusInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(bonus.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
             }
+            
+            RenderSettings.skybox = await _downloadBundle.DownloadAsset<Material>(_currentLevelContext.CurrentLevel.SkyBox);
         }
         
         private void RemoveLevel(LevelData currentLevel, ButtonView buttonView)
