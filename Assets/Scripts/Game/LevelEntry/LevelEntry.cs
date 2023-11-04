@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using DIContainerLib;
-using Game.Boot;
 using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Utils;
@@ -15,7 +14,7 @@ namespace Game
 {
     public class LevelEntry : BaseSystem
     {
-        protected override int _initOrder { get; } = -1;
+        protected override int _initOrder { get; }
         
         [SerializeField] 
         private LevelCastView _levelCastView;

@@ -1,6 +1,7 @@
 using System;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Game.Views
 {
@@ -11,7 +12,7 @@ namespace Game.Views
         public CinemachineVirtualCamera VirtualCamera;
 
         [field: SerializeField] 
-        public string CharacterAsset = "unitychan";
+        public AssetReference CharacterAsset;
 
         [field: SerializeField] 
         public float Speed { get; private set; } = 5;

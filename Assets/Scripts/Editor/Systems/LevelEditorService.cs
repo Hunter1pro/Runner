@@ -7,6 +7,8 @@ using Game.Level.Data;
 using Game.Level.Systems;
 using Game.Utils;
 using HexLib;
+using Powerof.Components;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -17,14 +19,23 @@ namespace Game.Editor.Systems
     {
         public LevelData CurrentLevel { get; set; }
         public GameObject CurrentMapObject { get; set; }
+        
+        
+        public Dictionary<Hex, GameObject> LevelObjects = new Dictionary<Hex, GameObject>();
 
         public void Dispose()
         {
             GameObject.Destroy(CurrentMapObject);
+
+            foreach (var levelObject in LevelObjects)
+            {
+                GameObject.Destroy(levelObject.Value);
+            }
+            LevelObjects.Clear();
         }
     }
     
-    public enum SelectActionType { None, Obstacles, Coins, SpeedBonus, StartPoint, EndPoint }
+    public enum SelectActionType { None, Obstacles, Coins, SpeedBonus, StartPoint, EndPoint, Remove }
     
     public class LevelEditorService
     {
@@ -38,11 +49,15 @@ namespace Game.Editor.Systems
         private LevelDataContainer _levelDataContainer;
         private Layout _layout;
 
+        private GenericDropDown<string> _genericDropdown;
+
         private SelectActionType _selectActionType;
 
         private CurrentLevelContext _currentLevelContext;
 
         private PlayerInput playerInput;
+
+        private ButtonView _lastButton;
         
         public LevelEditorService(IMapCreator mapCreator, IDownloadBundle downloadBundle, EditorView editorView, LevelDataContainer levelDataContainer, 
             ILevelCast levelCast, Layout layout, LevelContainerFile levelContainerFile)
@@ -78,7 +93,7 @@ namespace Game.Editor.Systems
                 _levelDataContainer = new LevelDataContainer { LevelDatas = new List<LevelData>() };
             }
             
-            SpawnActionButton("Create", () =>
+            SpawnActionButton("Create", x =>
             {
                 if (_currentLevelContext != null)
                     _currentLevelContext.Dispose();
@@ -106,17 +121,41 @@ namespace Game.Editor.Systems
                 _currentLevelContext = currentLevelContext;
             });
 
-            SpawnActionButton("None", () => { _selectActionType = SelectActionType.None; });
-            SpawnActionButton("Obstacles", () => { _selectActionType = SelectActionType.Obstacles; });
-            SpawnActionButton("Coins", () => { _selectActionType = SelectActionType.Coins; });
-            SpawnActionButton("Speed", () => { _selectActionType = SelectActionType.SpeedBonus; });
-            SpawnActionButton("StartPoint", () => { _selectActionType = SelectActionType.StartPoint;});
-            SpawnActionButton("EndPoint", () => { _selectActionType = SelectActionType.EndPoint; });
+            SpawnActionButton("None", x => SelectButton(x, SelectActionType.None));
+            SpawnActionButton("Obstacles", x =>  SelectButton(x, SelectActionType.Obstacles));
+            SpawnActionButton("Coins", x =>  SelectButton(x, SelectActionType.Coins));
+            SpawnActionButton("Speed", x => SelectButton(x, SelectActionType.SpeedBonus));
+            SpawnActionButton("StartPoint", x => SelectButton(x, SelectActionType.StartPoint));
+            SpawnActionButton("EndPoint", x => SelectButton(x, SelectActionType.EndPoint));
+            SpawnActionButton("Remove", x => SelectButton(x, SelectActionType.Remove));
 
-            SpawnActionButton("Save", () =>
+            SpawnActionButton("Save", x =>
             {
                 SaveSystem<LevelDataContainer>.Save(_levelContainerFile, _levelDataContainer);
             });
+
+            var tmpDropdown = TMP_Dropdown.Instantiate(_editorView.DropdownPrefab, _editorView.ActionsPanelRoot);
+            _genericDropdown = new GenericDropDown<string>(tmpDropdown);
+            _genericDropdown.Init(editorView.LevelTestData.SkyBoxes.Select(x => (x, x)).ToList(), async result =>
+            {
+                if (_currentLevelContext != null)
+                {
+                    RenderSettings.skybox = await _downloadBundle.DownloadAsset<Material>(result);
+                    _currentLevelContext.CurrentLevel.SkyBox = result;
+                }
+                
+            });
+        }
+
+        private void SelectButton(ButtonView buttonView, SelectActionType actionType)
+        {
+            _selectActionType = actionType;
+            
+            if (_lastButton != null)
+                _lastButton.ResetColors();
+
+            _lastButton = buttonView;
+            _lastButton.SetHightLight(_editorView.HiglightColor);
         }
 
         private async void OnClick(InputAction.CallbackContext value)
@@ -169,15 +208,36 @@ namespace Game.Editor.Systems
                         _currentLevelContext.CurrentLevel.BonusDatas.Add(new BonusData { AssetAddress = speedAddress, BonusType = BonusType.Speed, Coordinate = hex });
                     }
                     break;
+                case SelectActionType.Remove:
+                    if (existInCoordinate)
+                    {
+                        GameObject.Destroy(_currentLevelContext.LevelObjects[hex]);
+                        _currentLevelContext.LevelObjects.Remove(hex);
+                        
+                        if (_currentLevelContext.CurrentLevel.ObstaclesDatas.Any(x => x.Coordinate == hex));
+                        {
+                            _currentLevelContext.CurrentLevel.ObstaclesDatas.RemoveAll(x => x.Coordinate == hex);
+                        }
+                        if (_currentLevelContext.CurrentLevel.CoinDatas.Any(x => x.Coordinate == hex))
+                        {
+                            _currentLevelContext.CurrentLevel.CoinDatas.RemoveAll(x => x.Coordinate == hex);
+                        }
+                        if (_currentLevelContext.CurrentLevel.BonusDatas.Any(x => x.Coordinate == hex))
+                        {
+                            _currentLevelContext.CurrentLevel.BonusDatas.RemoveAll(x => x.Coordinate == hex);
+                        }
+                    }
+                    break;
             }
         }
 
         private async Task SpawnItem(Hex hex, string assetAddress)
         {
             var hexPosition = _hexGridSystem.HexToPosition(hex);
-            
             var asset = await _downloadBundle.DownloadAsset(assetAddress);
             var instance = GameObject.Instantiate(asset, hexPosition, Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+            
+            _currentLevelContext.LevelObjects.Add(hex, instance);
         }
 
         private void SpawnLevelButton(string name, Action open, Action<ButtonView> remove)
@@ -188,10 +248,11 @@ namespace Game.Editor.Systems
             buttonItem.SetText(name);
         }
         
-        private void SpawnActionButton(string name, Action action)
+        private void SpawnActionButton(string name, Action<ButtonView> action)
         {
             var buttonView = GameObject.Instantiate(_editorView.ButtonViewPrefab, _editorView.ActionsPanelRoot);
-            buttonView.Subscribe(action);
+            buttonView.Subscribe(() => action?.Invoke(buttonView));
+            buttonView.Init();
             buttonView.SetText(name);
         }
 
@@ -217,6 +278,8 @@ namespace Game.Editor.Systems
                 var asset = await _downloadBundle.DownloadAsset(obstacle.AssetAddress);
                 var obstacleInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(obstacle.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+                
+                _currentLevelContext.LevelObjects.Add(obstacle.Coordinate, obstacleInstance);
             }
             
             foreach (var coin in _currentLevelContext.CurrentLevel.CoinDatas)
@@ -224,6 +287,8 @@ namespace Game.Editor.Systems
                 var asset = await _downloadBundle.DownloadAsset(coin.AssetAddress);
                 var coinInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(coin.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+                
+                _currentLevelContext.LevelObjects.Add(coin.Coordinate, coinInstance);
             }
             
             foreach (var bonus in _currentLevelContext.CurrentLevel.BonusDatas)
@@ -231,7 +296,11 @@ namespace Game.Editor.Systems
                 var asset = await _downloadBundle.DownloadAsset(bonus.AssetAddress);
                 var bonusInstance = GameObject.Instantiate(asset, _hexGridSystem.HexToPosition(bonus.Coordinate), 
                     Quaternion.identity, _currentLevelContext.CurrentMapObject.transform);
+                
+                _currentLevelContext.LevelObjects.Add(bonus.Coordinate, bonusInstance);
             }
+            
+            RenderSettings.skybox = await _downloadBundle.DownloadAsset<Material>(_currentLevelContext.CurrentLevel.SkyBox);
         }
         
         private void RemoveLevel(LevelData currentLevel, ButtonView buttonView)

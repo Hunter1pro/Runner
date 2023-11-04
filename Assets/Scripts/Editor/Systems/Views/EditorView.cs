@@ -38,6 +38,12 @@ namespace Game.Editor.Systems.Views
 
         [field: SerializeField] 
         public LevelTestData LevelTestData { get; private set; }
+
+        [field: SerializeField] 
+        public TMP_Dropdown DropdownPrefab { get; private set; }
+        
+        [field: SerializeField]
+        public Color HiglightColor { get; private set; }
     }
 }
 

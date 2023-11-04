@@ -21,3 +21,16 @@ MonoBehaviour:
   - Obstacle_3
   <CoinAsset>k__BackingField: Coin
   <SpeedBonusAsset>k__BackingField: Bottle_Endurance
+  <SkyBoxes>k__BackingField:
+  - SkyBox_1
+  - SkyBox_2
+  - SkyBox_3
+  - SkyBox_4
+  - SkyBox_5
+  - SkyBox_6
+  - SkyBox_7
+  - SkyBox_8
+  - SkyBox_9
+  - SkyBox_10
+  - SkyBox_11
+  - SkyBox_12

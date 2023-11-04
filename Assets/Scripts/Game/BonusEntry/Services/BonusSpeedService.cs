@@ -13,6 +13,8 @@ namespace Game.Bonus.Services
         private BonusEntryView _bonusEntryView;
         private CancellationTokenSource _cancellationTokenSourse = new CancellationTokenSource();
 
+        private bool _inProgress;
+
         public BonusSpeedService(IMoveComponent moveComponent, BonusEntryView bonusEntryView)
         {
             _moveComponent = moveComponent;
@@ -22,12 +24,18 @@ namespace Game.Bonus.Services
         public async void BonusTrigger(GameObject bonus)
         {
             GameObject.Destroy(bonus);
+
+            if (_inProgress)
+                await Task.Delay(TimeSpan.FromSeconds(0.1f), _cancellationTokenSourse.Token);
             
             _moveComponent.UpdateSpeed(_bonusEntryView.BonusSpeed);
-
+            _inProgress = true;   
+            
             await Task.Delay(TimeSpan.FromSeconds(_bonusEntryView.BonusSpeedTime), _cancellationTokenSourse.Token);
             
             _moveComponent.RestoreSpeed();
+
+            _inProgress = false;
         }
 
         public void Dispose()
