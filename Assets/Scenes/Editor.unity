@@ -688,6 +688,7 @@ MonoBehaviour:
     <EndPoint>k__BackingField: {fileID: 1078323328}
     <LevelTestData>k__BackingField: {fileID: 11400000, guid: 61146a4c0be324541bda97c7263a8293, type: 2}
     <DropdownPrefab>k__BackingField: {fileID: 6275055423565763883, guid: 61c3fc9658527e341a2268f799d2cf9e, type: 3}
+    <HiglightColor>k__BackingField: {r: 0.18823427, g: 0.5953114, b: 0.8867924, a: 0.6862745}
   _levelCastView:
     <Camera>k__BackingField: {fileID: 963194227}
     <LayerMask>k__BackingField:

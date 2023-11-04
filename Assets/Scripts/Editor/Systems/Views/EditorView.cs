@@ -41,6 +41,9 @@ namespace Game.Editor.Systems.Views
 
         [field: SerializeField] 
         public TMP_Dropdown DropdownPrefab { get; private set; }
+        
+        [field: SerializeField]
+        public Color HiglightColor { get; private set; }
     }
 }
 
