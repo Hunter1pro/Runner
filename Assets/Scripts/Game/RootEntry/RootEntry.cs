@@ -60,7 +60,6 @@ namespace Game.Boot
 
         private async Task GenerateServices(int currentLevel)
         {
-            Debug.Log($"#currentLevel {currentLevel}");
             _score = 0;
             _uiEntry.Dispose();
             _uiEntry.StartGame(_currentLevel);
@@ -71,7 +70,6 @@ namespace Game.Boot
         
             _gameContainer = await GetSystem<GameEntry>().GenerateGameServices(rootLevelContainer, levelContainer.downloadBundle, levelContainer.hexGridSystem, this);
             _bonusEntry.ResolveBonusServises(_gameContainer.GetService<IMoveComponent>());
-   
         }
 
         private (LevelProvider levelProvider, Layout layout, Material material) ResolveLevelProvider(LevelDataContainer levelDataContainer, int level)

@@ -11,7 +11,6 @@ using Powerof.Components;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace Game.Editor.Systems

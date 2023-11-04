@@ -47,7 +47,6 @@ namespace Game
             var levelObjectsContainer = container.GetService<ILevelObjectsContainer>();
             var moveComponent = container.GetService<IMoveComponent>();
             var swipeInput = container.GetService<ISwipeInput>();
-            swipeInput.SwipeAction += SwipeAction;
 
             levelObjectsContainer.AddLevelObject(characterInstance);
 
@@ -61,11 +60,6 @@ namespace Game
             _gameEntryView.VirtualCamera.LookAt = characterInstance.transform;
 
             return container;
-        }
-
-        private void SwipeAction(bool right)
-        {
-            Debug.Log($"Swipe {right}");
         }
     }
 }
