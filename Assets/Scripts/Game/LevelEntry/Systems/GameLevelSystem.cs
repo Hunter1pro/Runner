@@ -12,26 +12,21 @@ namespace Game.Level.Systems
     public class GameLevelSystem : IGameLevelSystem
     {
         private IMapCreator _mapCreator;
-        private ISpawnSystem _spawnSystem;
         private IDownloadBundle _downloadBundle;
         private ILevelObjectsContainer _levelObjectsContainer;
         private ILevelProvider _levelProvider;
         private HexGridSystem _hexGridSystem;
-        private ICustomLogger _logger;
         
-        private Dictionary<string, Hex> _currentMap = new ();
         private string PLAYER_TAG = "Player";
         
-        public GameLevelSystem(IMapCreator mapCreator, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem, ILevelProvider levelProvider, ISpawnSystem spawnSystem, 
-            ILevelObjectsContainer levelObjectsContainer, ICustomLogger logger)
+        public GameLevelSystem(IMapCreator mapCreator, IDownloadBundle downloadBundle, HexGridSystem hexGridSystem, ILevelProvider levelProvider, 
+            ILevelObjectsContainer levelObjectsContainer)
         {
             _mapCreator = mapCreator;
-            _spawnSystem = spawnSystem;
             _downloadBundle = downloadBundle;
             _levelObjectsContainer = levelObjectsContainer;
             _levelProvider = levelProvider;
             _hexGridSystem = hexGridSystem;
-            _logger = logger;
         }
 
         public async Task SpawnLevel(Material material, Action obstacleTrigger, Action<GameObject> coinTrigger, Action<GameObject, BonusType> bonusTrigger)
